@@ -1,4 +1,4 @@
-function Sim_47(nSubj,SvNm,nRlz)
+function Sim_01(nSubj,SvNm,nRlz)
 %
 % Creates a 2D images of linearly increasing signal from L to R, and then applies the standardized effects Contour Inference method
 % for each of the proposed options
@@ -32,6 +32,7 @@ mag     = 3;
 rimFWHM = 2/sqrt(2*log(2)); 				 
 stdblk  = prod(dim([1 2])/2);
 thr     = 2;
+rad     = 30;
 
 %-----------Initialization of Some Variables
 V           = prod(dim);   
@@ -41,7 +42,6 @@ trunc_y     = {(ceil(rimFWHM*smo)+1):(ceil(rimFWHM*smo)+dim(2))};
 trnind      = cat(2, trunc_x, trunc_y);
 
 observed_data  = zeros([dim nSubj]);
-raw_noise      = zeros([wdim nSubj]);
 
 % This stores the vector SupG for each run
 % This vector stores the result for each realisation on whether AC^+ < AC < AC^ for each level of smoothing (1 if true, 0 if false) 
@@ -126,73 +126,22 @@ supG_raw                         = zeros(nBoot,1);
 supG_observed                    = zeros(nBoot,1);
 
 % Creating linearly increasing signal across columns
-Sig = repmat(linspace(1, 3), dim(2), 1);
+Sig = create_signal(wdim, 'circle', [mag, rad], smo, trnind);
 
 % Uncomment to look at the Signal
 %imagesc(Sig); axis image; colorbar
 AC = Sig >= thr;
 
-% Variables for computing the estimated boundary
-[a,b] = ndgrid(-1:1);
-se = strel('arbitrary',sqrt(a.^2 + b.^2) <=1);
-
-% Obtaining the edges for the boundary Sig > 2 using the linear interpolation methods 
-  % Making the interpolated boundary edges
-  % Horizontal edges
-  horz = AC(:,2:end) | AC(:,1:end-1);
-  % Compute the left shifted horizontal edges
-  lshift            = AC; % initialize
-  lshift(:,1:end-1) = horz;
-  lshift            = lshift & ~AC;
-  %%% Compute the right shifted horizontal edges
-  rshift          = AC; % initialize
-  rshift(:,2:end) = horz;
-  rshift          = rshift & ~AC;
-  % Vertical edges
-  vert = AC(1:end-1,:) | AC(2:end,:);
-  %%% Compute the right shifted horizontal edges
-  ushift = AC;
-  ushift(1:end-1,:) = vert;
-  ushift = ushift & ~AC;
-  %%% Compute the down shifted vertical edges
-  dshift = AC;
-  %%% Values of random field on down shifted vertical edges
-  dshift(2:end,:)   = vert;
-  dshift = dshift & ~AC;
+Sig_boundary_edges   = getBdryparams(Sig, thr);
   
-% Computing the weights for the weighted linear boundary
-lshift_w1 = abs(Sig(lshift(:,[dim(2) 1:dim(2)-1])) - thr)./abs(Sig(lshift) - Sig(lshift(:,[dim(2) 1:dim(2)-1])));
-lshift_w2 = abs(Sig(lshift) - thr)./abs(Sig(lshift) - Sig(lshift(:,[dim(2) 1:dim(2)-1])));
-
-rshift_w1 = abs(Sig(rshift(:,[2:dim(2) 1])) - thr)./abs(Sig(rshift) - Sig(rshift(:,[2:dim(2) 1])));
-rshift_w2 = abs(Sig(rshift) - thr)./abs(Sig(rshift) - Sig(rshift(:,[2:dim(2) 1])));
-
-ushift_w1 = abs(Sig(ushift([dim(1) 1:dim(1)-1],:)) - thr)./abs(Sig(ushift) - Sig(ushift([dim(1) 1:dim(1)-1],:)));
-ushift_w2 = abs(Sig(ushift) - thr)./abs(Sig(ushift) - Sig(ushift([dim(1) 1:dim(1)-1],:)));
-
-dshift_w1 = abs(Sig(dshift([2:dim(1) 1],:)) - thr)./abs(Sig(dshift) - Sig(dshift([2:dim(1) 1],:)));
-dshift_w2 = abs(Sig(dshift) - thr)./abs(Sig(dshift) - Sig(dshift([2:dim(1) 1],:)));
-
-
 for t=1:nRlz
     fprintf('.');
       for i=1:nSubj
 	    %
 	    % Generate random realizations of signal + noise
 	    %
-        raw_noise(:,:,i) = randn(wdim); %- Noise that will be added to the signal 
-
-        %
-        % smooth noise  
-        %
-        [Noises,tt] = spm_conv(raw_noise(:,:,i),smo,smo);
-        Noises = Noises/sqrt(tt);      
-      
-        %
-        % Truncate to avoid edge effects
-        %
-        tNoises = Noises(trnind{1},trnind{2});       
-        tImgs = Sig + tNoises; % Creates the true image of smoothed signal + smoothed noise
+        Noise = create_noise(wdim, 'homo', 1, smo, trnind);
+        tImgs = Sig + Noise; % Creates the true image of smoothed signal + smoothed noise
         observed_data(:,:,i) = tImgs;
         
       end %========== Loop i (subjects)
@@ -202,48 +151,15 @@ for t=1:nRlz
       observed_std = reshape(...
          biasmystd(reshape(observed_data,[prod(dim) nSubj]),stdblk),...
            dim);
+       
+      observed_cohen_d = observed_mean./observed_std;
       
-      % Making the observed boundary and weights
-      observed_AC = observed_mean >= thr;
+      observed_cohen_d_std = sqrt(1+observed_cohen_d.^2/2); 
       
-      % Making the interpolated boundary edges
-      % Horizontal edges
-      observed_horz = observed_AC(:,2:end) | observed_AC(:,1:end-1);
-      % Compute the left shifted horizontal edges
-      observed_lshift            = observed_AC; % initialize
-      observed_lshift(:,1:end-1) = observed_horz;
-      observed_lshift            = observed_lshift & ~observed_AC;
-      %%% Compute the right shifted horizontal edges
-      observed_rshift          = observed_AC; % initialize
-      observed_rshift(:,2:end) = observed_horz;
-      observed_rshift          = observed_rshift & ~observed_AC;
-      % Vertical edges
-      vert = observed_AC(1:end-1,:) | observed_AC(2:end,:);
-      %%% Compute the up shifted horizontal edges
-      observed_ushift = observed_AC;
-      observed_ushift(1:end-1,:) = vert;
-      observed_ushift = observed_ushift & ~observed_AC;
-      %%% Compute the down shifted vertical edges
-      observed_dshift = observed_AC;
-      observed_dshift(2:end,:)   = vert;
-      observed_dshift = observed_dshift & ~observed_AC;
+      observed_boundary_edges = getBdryparams(observed_cohen_d, thr);
       
-      % Computing the weights for the weighted linear boundary
-      observed_lshift_w1 = abs(observed_mean(observed_lshift(:,[dim(2) 1:dim(2)-1])) - thr)./abs(observed_mean(observed_lshift) - observed_mean(observed_lshift(:,[dim(2) 1:dim(2)-1])));
-      observed_lshift_w2 = abs(observed_mean(observed_lshift) - thr)./abs(observed_mean(observed_lshift) - observed_mean(observed_lshift(:,[dim(2) 1:dim(2)-1])));
-
-      observed_rshift_w1 = abs(observed_mean(observed_rshift(:,[2:dim(2) 1])) - thr)./abs(observed_mean(observed_rshift) - observed_mean(observed_rshift(:,[2:dim(2) 1])));
-      observed_rshift_w2 = abs(observed_mean(observed_rshift) - thr)./abs(observed_mean(observed_rshift) - observed_mean(observed_rshift(:,[2:dim(2) 1])));
-
-      observed_ushift_w1 = abs(observed_mean(observed_ushift([dim(1) 1:dim(1)-1],:)) - thr)./abs(observed_mean(observed_ushift) - observed_mean(observed_ushift([dim(1) 1:dim(1)-1],:)));
-      observed_ushift_w2 = abs(observed_mean(observed_ushift) - thr)./abs(observed_mean(observed_ushift) - observed_mean(observed_ushift([dim(1) 1:dim(1)-1],:)));
-
-      observed_dshift_w1 = abs(observed_mean(observed_dshift([2:dim(1) 1],:)) - thr)./abs(observed_mean(observed_dshift) - observed_mean(observed_dshift([2:dim(1) 1],:)));
-      observed_dshift_w2 = abs(observed_mean(observed_dshift) - thr)./abs(observed_mean(observed_dshift) - observed_mean(observed_dshift([2:dim(1) 1],:)));
-
       % Residuals
-      resid = bsxfun(@minus,observed_data,observed_mean);
-      resid = spdiags(1./reshape(observed_std, [prod(dim) 1]), 0,prod(dim),prod(dim))*reshape(resid,[prod(dim) nSubj]);
+      resid = create_resid(observed_data, observed_mean, observed_std, 1);
             
       % Implementing the Multiplier Boostrap to obtain confidence intervals
       for k=1:nBoot 
@@ -255,21 +171,14 @@ for t=1:nRlz
           % Re-standardizing by bootstrap standard deviation
           boot_std                               = std(resid_bootstrap, 0, 3);
           resid_field                            = resid_field./boot_std;
-
-          % Calculating the maximum over the mu = thresh weighted boundary edges
-          lshift_boundary_values = abs(lshift_w1.*resid_field(lshift) + lshift_w2.*resid_field(lshift(:,[dim(2) 1:dim(2)-1])));
-          rshift_boundary_values = abs(rshift_w1.*resid_field(rshift) + rshift_w2.*resid_field(rshift(:,[2:dim(2) 1])));
-          ushift_boundary_values = abs(ushift_w1.*resid_field(ushift) + ushift_w2.*resid_field(ushift([dim(1) 1:dim(1)-1],:)));
-          dshift_boundary_values = abs(dshift_w1.*resid_field(dshift) + dshift_w2.*resid_field(dshift([2:dim(1) 1],:)));
-          supG_raw(k)            = max([lshift_boundary_values; rshift_boundary_values; ushift_boundary_values; dshift_boundary_values]);
           
-          % Calculating the maximum over the mu^ = thresh weighted boundary
-          % edges
-          observed_lshift_boundary_values = abs(observed_lshift_w1.*resid_field(observed_lshift) + observed_lshift_w2.*resid_field(observed_lshift(:,[dim(2) 1:dim(2)-1])));
-          observed_rshift_boundary_values = abs(observed_rshift_w1.*resid_field(observed_rshift) + observed_rshift_w2.*resid_field(observed_rshift(:,[2:dim(2) 1])));
-          observed_ushift_boundary_values = abs(observed_ushift_w1.*resid_field(observed_ushift) + observed_ushift_w2.*resid_field(observed_ushift([dim(1) 1:dim(1)-1],:)));
-          observed_dshift_boundary_values = abs(observed_dshift_w1.*resid_field(observed_dshift) + observed_dshift_w2.*resid_field(observed_dshift([2:dim(1) 1],:)));
-          supG_observed(k)            = max([observed_lshift_boundary_values; observed_rshift_boundary_values; observed_ushift_boundary_values; observed_dshift_boundary_values]);
+          % Calculating the maximum over the weighted interpolated true boundary edges
+          true_boundary_values = getBdryvalues(resid_field, Sig_boundary_edges);
+          supG_raw(k)          = max(abs(true_boundary_values)); 
+          
+          % Calculating the maximum over the weighted interpolated observed boundary edges
+          weighted_boundary_values = getBdryvalues(resid_field, observed_boundary_edges);
+          supG_observed(k)         = max(abs(weighted_boundary_values));   
       end
       
     middle_contour                = AC;
@@ -281,8 +190,8 @@ for t=1:nRlz
     supGa_raw_90                     = prctile(supG_raw, 90);
     supGa_raw_95                     = prctile(supG_raw, 95);
        
-    lower_contour_raw_80             = observed_mean >= thr - supGa_raw_80*tau*observed_std;
-    upper_contour_raw_80             = observed_mean >= thr + supGa_raw_80*tau*observed_std;
+    lower_contour_raw_80             = observed_cohen_d >= thr - supGa_raw_80*tau*observed_cohen_d_std;
+    upper_contour_raw_80             = observed_cohen_d >= thr + supGa_raw_80*tau*observed_cohen_d_std;
     lower_contour_raw_80_volume_prct = sum(lower_contour_raw_80(:))/middle_contour_volume;
     upper_contour_raw_80_volume_prct = sum(upper_contour_raw_80(:))/middle_contour_volume;
     mid_on_upper_raw_80              = upper_contour_raw_80.*middle_contour;
@@ -290,8 +199,8 @@ for t=1:nRlz
     upper_subset_mid_raw_80          = upper_contour_raw_80 - mid_on_upper_raw_80;
     mid_subset_lower_raw_80          = middle_contour - lower_on_mid_raw_80;
     
-    lower_contour_raw_90             = observed_mean >= thr - supGa_raw_90*tau*observed_std;
-    upper_contour_raw_90             = observed_mean >= thr + supGa_raw_90*tau*observed_std;
+    lower_contour_raw_90             = observed_cohen_d >= thr - supGa_raw_90*tau*observed_cohen_d_std;
+    upper_contour_raw_90             = observed_cohen_d >= thr + supGa_raw_90*tau*observed_cohen_d_std;
     lower_contour_raw_90_volume_prct = sum(lower_contour_raw_90(:))/middle_contour_volume;
     upper_contour_raw_90_volume_prct = sum(upper_contour_raw_90(:))/middle_contour_volume;
     mid_on_upper_raw_90              = upper_contour_raw_90.*middle_contour;
@@ -299,8 +208,8 @@ for t=1:nRlz
     upper_subset_mid_raw_90          = upper_contour_raw_90 - mid_on_upper_raw_90;
     mid_subset_lower_raw_90          = middle_contour - lower_on_mid_raw_90;    
     
-    lower_contour_raw_95             = observed_mean >= thr - supGa_raw_95*tau*observed_std;
-    upper_contour_raw_95             = observed_mean >= thr + supGa_raw_95*tau*observed_std;
+    lower_contour_raw_95             = observed_cohen_d >= thr - supGa_raw_95*tau*observed_cohen_d_std;
+    upper_contour_raw_95             = observed_cohen_d >= thr + supGa_raw_95*tau*observed_cohen_d_std;
     lower_contour_raw_95_volume_prct = sum(lower_contour_raw_95(:))/middle_contour_volume;
     upper_contour_raw_95_volume_prct = sum(upper_contour_raw_95(:))/middle_contour_volume;
     mid_on_upper_raw_95              = upper_contour_raw_95.*middle_contour;
@@ -313,8 +222,8 @@ for t=1:nRlz
     supGa_observed_90                     = prctile(supG_observed, 90);
     supGa_observed_95                     = prctile(supG_observed, 95);
        
-    lower_contour_observed_80             = observed_mean >= thr - supGa_observed_80*tau*observed_std;
-    upper_contour_observed_80             = observed_mean >= thr + supGa_observed_80*tau*observed_std;
+    lower_contour_observed_80             = observed_cohen_d >= thr - supGa_observed_80*tau*observed_cohen_d_std;
+    upper_contour_observed_80             = observed_cohen_d >= thr + supGa_observed_80*tau*observed_cohen_d_std;
     lower_contour_observed_80_volume_prct = sum(lower_contour_observed_80(:))/middle_contour_volume;
     upper_contour_observed_80_volume_prct = sum(upper_contour_observed_80(:))/middle_contour_volume;
     mid_on_upper_observed_80              = upper_contour_observed_80.*middle_contour;
@@ -322,8 +231,8 @@ for t=1:nRlz
     upper_subset_mid_observed_80          = upper_contour_observed_80 - mid_on_upper_observed_80;
     mid_subset_lower_observed_80          = middle_contour - lower_on_mid_observed_80;
     
-    lower_contour_observed_90             = observed_mean >= thr - supGa_observed_90*tau*observed_std;
-    upper_contour_observed_90             = observed_mean >= thr + supGa_observed_90*tau*observed_std;
+    lower_contour_observed_90             = observed_cohen_d >= thr - supGa_observed_90*tau*observed_cohen_d_std;
+    upper_contour_observed_90             = observed_cohen_d >= thr + supGa_observed_90*tau*observed_cohen_d_std;
     lower_contour_observed_90_volume_prct = sum(lower_contour_observed_90(:))/middle_contour_volume;
     upper_contour_observed_90_volume_prct = sum(upper_contour_observed_90(:))/middle_contour_volume;
     mid_on_upper_observed_90              = upper_contour_observed_90.*middle_contour;
@@ -331,15 +240,14 @@ for t=1:nRlz
     upper_subset_mid_observed_90          = upper_contour_observed_90 - mid_on_upper_observed_90;
     mid_subset_lower_observed_90          = middle_contour - lower_on_mid_observed_90;    
     
-    lower_contour_observed_95             = observed_mean >= thr - supGa_observed_95*tau*observed_std;
-    upper_contour_observed_95             = observed_mean >= thr + supGa_observed_95*tau*observed_std;
+    lower_contour_observed_95             = observed_cohen_d >= thr - supGa_observed_95*tau*observed_cohen_d_std;
+    upper_contour_observed_95             = observed_cohen_d >= thr + supGa_observed_95*tau*observed_cohen_d_std;
     lower_contour_observed_95_volume_prct = sum(lower_contour_observed_95(:))/middle_contour_volume;
     upper_contour_observed_95_volume_prct = sum(upper_contour_observed_95(:))/middle_contour_volume;
     mid_on_upper_observed_95              = upper_contour_observed_95.*middle_contour;
     lower_on_mid_observed_95              = middle_contour.*lower_contour_observed_95;
     upper_subset_mid_observed_95          = upper_contour_observed_95 - mid_on_upper_observed_95;
     mid_subset_lower_observed_95          = middle_contour - lower_on_mid_observed_95;
-
 
     %
     % Storing all variables of interest
@@ -394,144 +302,63 @@ for t=1:nRlz
     upper_subset_mid_observed_95_store(t,:,:)                   = upper_subset_mid_observed_95;
     mid_subset_lower_observed_95_store(t,:,:)                   = mid_subset_lower_observed_95;
     lower_contour_observed_95_volume_prct_store(t)              = lower_contour_observed_95_volume_prct;
-    upper_contour_observed_95_volume_prct_store(t)              = upper_contour_observed_95_volume_prct;
-    
-    lshift_observed_mean_boundary = abs(lshift_w1.*observed_mean(lshift) + lshift_w2.*observed_mean(lshift(:,[dim(2) 1:dim(2)-1])));
-    rshift_observed_mean_boundary = abs(rshift_w1.*observed_mean(rshift) + rshift_w2.*observed_mean(rshift(:,[2:dim(2) 1])));
-    ushift_observed_mean_boundary = abs(ushift_w1.*observed_mean(ushift) + ushift_w2.*observed_mean(ushift([dim(1) 1:dim(1)-1],:)));
-    dshift_observed_mean_boundary = abs(dshift_w1.*observed_mean(dshift) + dshift_w2.*observed_mean(dshift([2:dim(1) 1],:)));
+    upper_contour_observed_95_volume_prct_store(t)              = upper_contour_observed_95_volume_prct;    
     
     % Calculating the subset condition when residuals in multiplier
     % bootstrap are taken along the true boundary
-    lower_condition_80 = thr - supGa_raw_80*tau*observed_std;
-    upper_condition_80 = thr + supGa_raw_80*tau*observed_std;
-    lower_condition_90 = thr - supGa_raw_90*tau*observed_std;
-    upper_condition_90 = thr + supGa_raw_90*tau*observed_std;
-    lower_condition_95 = thr - supGa_raw_95*tau*observed_std;
-    upper_condition_95 = thr + supGa_raw_95*tau*observed_std;
+    lower_condition_80 = thr - supGa_raw_80*tau*observed_cohen_d_std;
+    upper_condition_80 = thr + supGa_raw_80*tau*observed_cohen_d_std;
+    lower_condition_90 = thr - supGa_raw_90*tau*observed_cohen_d_std;
+    upper_condition_90 = thr + supGa_raw_90*tau*observed_cohen_d_std;
+    lower_condition_95 = thr - supGa_raw_95*tau*observed_cohen_d_std;
+    upper_condition_95 = thr + supGa_raw_95*tau*observed_cohen_d_std;
     
-    lshift_lower_condition_80_boundary = abs(lshift_w1.*lower_condition_80(lshift) + lshift_w2.*lower_condition_80(lshift(:,[dim(2) 1:dim(2)-1])));
-    rshift_lower_condition_80_boundary = abs(rshift_w1.*lower_condition_80(rshift) + rshift_w2.*lower_condition_80(rshift(:,[2:dim(2) 1])));
-    ushift_lower_condition_80_boundary = abs(ushift_w1.*lower_condition_80(ushift) + ushift_w2.*lower_condition_80(ushift([dim(1) 1:dim(1)-1],:)));
-    dshift_lower_condition_80_boundary = abs(dshift_w1.*lower_condition_80(dshift) + dshift_w2.*lower_condition_80(dshift([2:dim(1) 1],:)));
+    lower_condition_80_boundary_values = getBdryvalues(lower_condition_80, Sig_boundary_edges);
+    upper_condition_80_boundary_values = getBdryvalues(upper_condition_80, Sig_boundary_edges);
+
+    lower_condition_90_boundary_values = getBdryvalues(lower_condition_90, Sig_boundary_edges);
+    upper_condition_90_boundary_values = getBdryvalues(upper_condition_90, Sig_boundary_edges);
     
-    lshift_upper_condition_80_boundary = abs(lshift_w1.*upper_condition_80(lshift) + lshift_w2.*upper_condition_80(lshift(:,[dim(2) 1:dim(2)-1])));
-    rshift_upper_condition_80_boundary = abs(rshift_w1.*upper_condition_80(rshift) + rshift_w2.*upper_condition_80(rshift(:,[2:dim(2) 1])));
-    ushift_upper_condition_80_boundary = abs(ushift_w1.*upper_condition_80(ushift) + ushift_w2.*upper_condition_80(ushift([dim(1) 1:dim(1)-1],:)));
-    dshift_upper_condition_80_boundary = abs(dshift_w1.*upper_condition_80(dshift) + dshift_w2.*upper_condition_80(dshift([2:dim(1) 1],:)));    
+    lower_condition_95_boundary_values = getBdryvalues(lower_condition_95, Sig_boundary_edges);
+    upper_condition_95_boundary_values = getBdryvalues(upper_condition_95, Sig_boundary_edges);
     
-    lshift_lower_condition_90_boundary = abs(lshift_w1.*lower_condition_90(lshift) + lshift_w2.*lower_condition_90(lshift(:,[dim(2) 1:dim(2)-1])));
-    rshift_lower_condition_90_boundary = abs(rshift_w1.*lower_condition_90(rshift) + rshift_w2.*lower_condition_90(rshift(:,[2:dim(2) 1])));
-    ushift_lower_condition_90_boundary = abs(ushift_w1.*lower_condition_90(ushift) + ushift_w2.*lower_condition_90(ushift([dim(1) 1:dim(1)-1],:)));
-    dshift_lower_condition_90_boundary = abs(dshift_w1.*lower_condition_90(dshift) + dshift_w2.*lower_condition_90(dshift([2:dim(1) 1],:)));
+    observed_cohen_d_true_boundary_values = getBdryvalues(observed_cohen_d, Sig_boundary_edges);
     
-    lshift_upper_condition_90_boundary = abs(lshift_w1.*upper_condition_90(lshift) + lshift_w2.*upper_condition_90(lshift(:,[dim(2) 1:dim(2)-1])));
-    rshift_upper_condition_90_boundary = abs(rshift_w1.*upper_condition_90(rshift) + rshift_w2.*upper_condition_90(rshift(:,[2:dim(2) 1])));
-    ushift_upper_condition_90_boundary = abs(ushift_w1.*upper_condition_90(ushift) + ushift_w2.*upper_condition_90(ushift([dim(1) 1:dim(1)-1],:)));
-    dshift_upper_condition_90_boundary = abs(dshift_w1.*upper_condition_90(dshift) + dshift_w2.*upper_condition_90(dshift([2:dim(1) 1],:)));
+    lower_condition_80_success = observed_cohen_d_true_boundary_values < lower_condition_80_boundary_values;
+    upper_condition_80_success = observed_cohen_d_true_boundary_values >= upper_condition_80_boundary_values;
     
-    lshift_lower_condition_95_boundary = abs(lshift_w1.*lower_condition_95(lshift) + lshift_w2.*lower_condition_95(lshift(:,[dim(2) 1:dim(2)-1])));
-    rshift_lower_condition_95_boundary = abs(rshift_w1.*lower_condition_95(rshift) + rshift_w2.*lower_condition_95(rshift(:,[2:dim(2) 1])));
-    ushift_lower_condition_95_boundary = abs(ushift_w1.*lower_condition_95(ushift) + ushift_w2.*lower_condition_95(ushift([dim(1) 1:dim(1)-1],:)));
-    dshift_lower_condition_95_boundary = abs(dshift_w1.*lower_condition_95(dshift) + dshift_w2.*lower_condition_95(dshift([2:dim(1) 1],:)));
+    lower_condition_90_success = observed_cohen_d_true_boundary_values < lower_condition_90_boundary_values;
+    upper_condition_90_success = observed_cohen_d_true_boundary_values >= upper_condition_90_boundary_values;
     
-    lshift_upper_condition_95_boundary = abs(lshift_w1.*upper_condition_95(lshift) + lshift_w2.*upper_condition_95(lshift(:,[dim(2) 1:dim(2)-1])));
-    rshift_upper_condition_95_boundary = abs(rshift_w1.*upper_condition_95(rshift) + rshift_w2.*upper_condition_95(rshift(:,[2:dim(2) 1])));
-    ushift_upper_condition_95_boundary = abs(ushift_w1.*upper_condition_95(ushift) + ushift_w2.*upper_condition_95(ushift([dim(1) 1:dim(1)-1],:)));
-    dshift_upper_condition_95_boundary = abs(dshift_w1.*upper_condition_95(dshift) + dshift_w2.*upper_condition_95(dshift([2:dim(1) 1],:)));
-    
-    lower_condition_80_success = [lshift_observed_mean_boundary < lshift_lower_condition_80_boundary, ... 
-                                  rshift_observed_mean_boundary < rshift_lower_condition_80_boundary, ...
-                                  ushift_observed_mean_boundary < ushift_lower_condition_80_boundary, ...
-                                  dshift_observed_mean_boundary < dshift_lower_condition_80_boundary];
-    upper_condition_80_success = [lshift_observed_mean_boundary >= lshift_upper_condition_80_boundary, ... 
-                                  rshift_observed_mean_boundary >= rshift_upper_condition_80_boundary, ...
-                                  ushift_observed_mean_boundary >= ushift_upper_condition_80_boundary, ...
-                                  dshift_observed_mean_boundary >= dshift_upper_condition_80_boundary];
-                              
-    lower_condition_90_success = [lshift_observed_mean_boundary < lshift_lower_condition_90_boundary, ... 
-                                  rshift_observed_mean_boundary < rshift_lower_condition_90_boundary, ...
-                                  ushift_observed_mean_boundary < ushift_lower_condition_90_boundary, ...
-                                  dshift_observed_mean_boundary < dshift_lower_condition_90_boundary];
-    upper_condition_90_success = [lshift_observed_mean_boundary >= lshift_upper_condition_90_boundary, ... 
-                                  rshift_observed_mean_boundary >= rshift_upper_condition_90_boundary, ...
-                                  ushift_observed_mean_boundary >= ushift_upper_condition_90_boundary, ...
-                                  dshift_observed_mean_boundary >= dshift_upper_condition_90_boundary];
-                              
-    lower_condition_95_success = [lshift_observed_mean_boundary < lshift_lower_condition_95_boundary, ... 
-                                  rshift_observed_mean_boundary < rshift_lower_condition_95_boundary, ...
-                                  ushift_observed_mean_boundary < ushift_lower_condition_95_boundary, ...
-                                  dshift_observed_mean_boundary < dshift_lower_condition_95_boundary];
-    upper_condition_95_success = [lshift_observed_mean_boundary >= lshift_upper_condition_95_boundary, ... 
-                                  rshift_observed_mean_boundary >= rshift_upper_condition_95_boundary, ...
-                                  ushift_observed_mean_boundary >= ushift_upper_condition_95_boundary, ...
-                                  dshift_observed_mean_boundary >= dshift_upper_condition_95_boundary];
+    lower_condition_95_success = observed_cohen_d_true_boundary_values < lower_condition_95_boundary_values;
+    upper_condition_95_success = observed_cohen_d_true_boundary_values >= upper_condition_95_boundary_values;
                               
     % Calculating the subset condition when residuals in multiplier
     % bootstrap are taken along the observed boundary
-    lower_condition_80_observed = thr - supGa_observed_80*tau*observed_std;
-    upper_condition_80_observed = thr + supGa_observed_80*tau*observed_std;
-    lower_condition_90_observed = thr - supGa_observed_90*tau*observed_std;
-    upper_condition_90_observed = thr + supGa_observed_90*tau*observed_std;
-    lower_condition_95_observed = thr - supGa_observed_95*tau*observed_std;
-    upper_condition_95_observed = thr + supGa_observed_95*tau*observed_std;
+    lower_condition_80_observed = thr - supGa_observed_80*tau*observed_cohen_d_std;
+    upper_condition_80_observed = thr + supGa_observed_80*tau*observed_cohen_d_std;
+    lower_condition_90_observed = thr - supGa_observed_90*tau*observed_cohen_d_std;
+    upper_condition_90_observed = thr + supGa_observed_90*tau*observed_cohen_d_std;
+    lower_condition_95_observed = thr - supGa_observed_95*tau*observed_cohen_d_std;
+    upper_condition_95_observed = thr + supGa_observed_95*tau*observed_cohen_d_std;
     
-    lshift_lower_condition_80_observed_boundary = abs(lshift_w1.*lower_condition_80_observed(lshift) + lshift_w2.*lower_condition_80_observed(lshift(:,[dim(2) 1:dim(2)-1])));
-    rshift_lower_condition_80_observed_boundary = abs(rshift_w1.*lower_condition_80_observed(rshift) + rshift_w2.*lower_condition_80_observed(rshift(:,[2:dim(2) 1])));
-    ushift_lower_condition_80_observed_boundary = abs(ushift_w1.*lower_condition_80_observed(ushift) + ushift_w2.*lower_condition_80_observed(ushift([dim(1) 1:dim(1)-1],:)));
-    dshift_lower_condition_80_observed_boundary = abs(dshift_w1.*lower_condition_80_observed(dshift) + dshift_w2.*lower_condition_80_observed(dshift([2:dim(1) 1],:)));
+    lower_condition_80_observed_boundary_values = getBdryvalues(lower_condition_80_observed, Sig_boundary_edges);
+    upper_condition_80_observed_boundary_values = getBdryvalues(upper_condition_80_observed, Sig_boundary_edges);
     
-    lshift_upper_condition_80_observed_boundary = abs(lshift_w1.*upper_condition_80_observed(lshift) + lshift_w2.*upper_condition_80_observed(lshift(:,[dim(2) 1:dim(2)-1])));
-    rshift_upper_condition_80_observed_boundary = abs(rshift_w1.*upper_condition_80_observed(rshift) + rshift_w2.*upper_condition_80_observed(rshift(:,[2:dim(2) 1])));
-    ushift_upper_condition_80_observed_boundary = abs(ushift_w1.*upper_condition_80_observed(ushift) + ushift_w2.*upper_condition_80_observed(ushift([dim(1) 1:dim(1)-1],:)));
-    dshift_upper_condition_80_observed_boundary = abs(dshift_w1.*upper_condition_80_observed(dshift) + dshift_w2.*upper_condition_80_observed(dshift([2:dim(1) 1],:)));    
+    lower_condition_90_observed_boundary_values = getBdryvalues(lower_condition_90_observed, Sig_boundary_edges);
+    upper_condition_90_observed_boundary_values = getBdryvalues(upper_condition_90_observed, Sig_boundary_edges);
     
-    lshift_lower_condition_90_observed_boundary = abs(lshift_w1.*lower_condition_90_observed(lshift) + lshift_w2.*lower_condition_90_observed(lshift(:,[dim(2) 1:dim(2)-1])));
-    rshift_lower_condition_90_observed_boundary = abs(rshift_w1.*lower_condition_90_observed(rshift) + rshift_w2.*lower_condition_90_observed(rshift(:,[2:dim(2) 1])));
-    ushift_lower_condition_90_observed_boundary = abs(ushift_w1.*lower_condition_90_observed(ushift) + ushift_w2.*lower_condition_90_observed(ushift([dim(1) 1:dim(1)-1],:)));
-    dshift_lower_condition_90_observed_boundary = abs(dshift_w1.*lower_condition_90_observed(dshift) + dshift_w2.*lower_condition_90_observed(dshift([2:dim(1) 1],:)));
+    lower_condition_95_observed_boundary_values = getBdryvalues(lower_condition_95_observed, Sig_boundary_edges);
+    upper_condition_95_observed_boundary_values = getBdryvalues(upper_condition_95_observed, Sig_boundary_edges);
     
-    lshift_upper_condition_90_observed_boundary = abs(lshift_w1.*upper_condition_90_observed(lshift) + lshift_w2.*upper_condition_90_observed(lshift(:,[dim(2) 1:dim(2)-1])));
-    rshift_upper_condition_90_observed_boundary = abs(rshift_w1.*upper_condition_90_observed(rshift) + rshift_w2.*upper_condition_90_observed(rshift(:,[2:dim(2) 1])));
-    ushift_upper_condition_90_observed_boundary = abs(ushift_w1.*upper_condition_90_observed(ushift) + ushift_w2.*upper_condition_90_observed(ushift([dim(1) 1:dim(1)-1],:)));
-    dshift_upper_condition_90_observed_boundary = abs(dshift_w1.*upper_condition_90_observed(dshift) + dshift_w2.*upper_condition_90_observed(dshift([2:dim(1) 1],:)));
+    lower_condition_80_observed_success = observed_cohen_d_true_boundary_values < lower_condition_80_observed_boundary_values;
+    upper_condition_80_observed_success = observed_cohen_d_true_boundary_values >= upper_condition_80_observed_boundary_values;
     
-    lshift_lower_condition_95_observed_boundary = abs(lshift_w1.*lower_condition_95_observed(lshift) + lshift_w2.*lower_condition_95_observed(lshift(:,[dim(2) 1:dim(2)-1])));
-    rshift_lower_condition_95_observed_boundary = abs(rshift_w1.*lower_condition_95_observed(rshift) + rshift_w2.*lower_condition_95_observed(rshift(:,[2:dim(2) 1])));
-    ushift_lower_condition_95_observed_boundary = abs(ushift_w1.*lower_condition_95_observed(ushift) + ushift_w2.*lower_condition_95_observed(ushift([dim(1) 1:dim(1)-1],:)));
-    dshift_lower_condition_95_observed_boundary = abs(dshift_w1.*lower_condition_95_observed(dshift) + dshift_w2.*lower_condition_95_observed(dshift([2:dim(1) 1],:)));
+    lower_condition_90_observed_success = observed_cohen_d_true_boundary_values < lower_condition_90_observed_boundary_values;
+    upper_condition_90_observed_success = observed_cohen_d_true_boundary_values >= upper_condition_90_observed_boundary_values;
     
-    lshift_upper_condition_95_observed_boundary = abs(lshift_w1.*upper_condition_95_observed(lshift) + lshift_w2.*upper_condition_95_observed(lshift(:,[dim(2) 1:dim(2)-1])));
-    rshift_upper_condition_95_observed_boundary = abs(rshift_w1.*upper_condition_95_observed(rshift) + rshift_w2.*upper_condition_95_observed(rshift(:,[2:dim(2) 1])));
-    ushift_upper_condition_95_observed_boundary = abs(ushift_w1.*upper_condition_95_observed(ushift) + ushift_w2.*upper_condition_95_observed(ushift([dim(1) 1:dim(1)-1],:)));
-    dshift_upper_condition_95_observed_boundary = abs(dshift_w1.*upper_condition_95_observed(dshift) + dshift_w2.*upper_condition_95_observed(dshift([2:dim(1) 1],:)));
-    
-    lower_condition_80_observed_success = [lshift_observed_mean_boundary < lshift_lower_condition_80_observed_boundary, ... 
-                                  rshift_observed_mean_boundary < rshift_lower_condition_80_observed_boundary, ...
-                                  ushift_observed_mean_boundary < ushift_lower_condition_80_observed_boundary, ...
-                                  dshift_observed_mean_boundary < dshift_lower_condition_80_observed_boundary];
-    upper_condition_80_observed_success = [lshift_observed_mean_boundary >= lshift_upper_condition_80_observed_boundary, ... 
-                                  rshift_observed_mean_boundary >= rshift_upper_condition_80_observed_boundary, ...
-                                  ushift_observed_mean_boundary >= ushift_upper_condition_80_observed_boundary, ...
-                                  dshift_observed_mean_boundary >= dshift_upper_condition_80_observed_boundary];
-                              
-    lower_condition_90_observed_success = [lshift_observed_mean_boundary < lshift_lower_condition_90_observed_boundary, ... 
-                                  rshift_observed_mean_boundary < rshift_lower_condition_90_observed_boundary, ...
-                                  ushift_observed_mean_boundary < ushift_lower_condition_90_observed_boundary, ...
-                                  dshift_observed_mean_boundary < dshift_lower_condition_90_observed_boundary];
-    upper_condition_90_observed_success = [lshift_observed_mean_boundary >= lshift_upper_condition_90_observed_boundary, ... 
-                                  rshift_observed_mean_boundary >= rshift_upper_condition_90_observed_boundary, ...
-                                  ushift_observed_mean_boundary >= ushift_upper_condition_90_observed_boundary, ...
-                                  dshift_observed_mean_boundary >= dshift_upper_condition_90_observed_boundary];
-                              
-    lower_condition_95_observed_success = [lshift_observed_mean_boundary < lshift_lower_condition_95_observed_boundary, ... 
-                                  rshift_observed_mean_boundary < rshift_lower_condition_95_observed_boundary, ...
-                                  ushift_observed_mean_boundary < ushift_lower_condition_95_observed_boundary, ...
-                                  dshift_observed_mean_boundary < dshift_lower_condition_95_observed_boundary];
-    upper_condition_95_observed_success = [lshift_observed_mean_boundary >= lshift_upper_condition_95_observed_boundary, ... 
-                                  rshift_observed_mean_boundary >= rshift_upper_condition_95_observed_boundary, ...
-                                  ushift_observed_mean_boundary >= ushift_upper_condition_95_observed_boundary, ...
-                                  dshift_observed_mean_boundary >= dshift_upper_condition_95_observed_boundary];
+    lower_condition_95_observed_success = observed_cohen_d_true_boundary_values < lower_condition_95_observed_boundary_values;
+    upper_condition_95_observed_success = observed_cohen_d_true_boundary_values >= upper_condition_95_observed_boundary_values;
     
     % Testing the subset condition (Ac^- < Ac < Ac^+) by only comparing
     % binarized sets for residuals on the true boundary in mult. bootstrap
