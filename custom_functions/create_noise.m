@@ -1,6 +1,6 @@
 function Y = create_noise(wdim, noise_type, var, smo, trnind)
 
-% Generates Signal
+% Generates either homogeneous or heterogeneous smoothing isotropic noise
 % 	Input:
 %		wdim:				Working dimension.
 %		noise_type:			2D options are 'homo', creating homogeneous i.i.d. noise, or 'ramp', creating heterogenous noise increasing as a ramp.
@@ -9,7 +9,7 @@ function Y = create_noise(wdim, noise_type, var, smo, trnind)
 %							If 'noise_type' is 'ramp', then param is vector [X,Y], and the standard devation of the noise increases as a ramp
 %							from X to Y in the y direction. 
 %		smo:				A value X giving the smoothing FWHM for isotropic smoothing
-%		trnind: 			A cell array fro truncating the noise back to original dimensions
+%		trnind: 			A cell array for truncating the noise back to original dimensions
 %
 %	Output
 %		Y:					Truncated Array of noise. 
