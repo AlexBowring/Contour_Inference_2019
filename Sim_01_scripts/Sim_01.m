@@ -159,25 +159,37 @@ for t=1:nRlz
       observed_boundary_edges = getBdryparams(observed_cohen_d, thr);
       
       % Residuals
-      resid = create_resid(observed_data, observed_mean, observed_std, 1);
+      unstandardized_resid = create_resid(observed_data, observed_mean, observed_std, 1);
+      cohen_resid          = create_resid(observed_data, observed_mean, observed_std, 2);
             
       % Implementing the Multiplier Boostrap to obtain confidence intervals
       for k=1:nBoot 
           % Applying the bootstrap using Rademacher variables (signflips)
+          % Obtaining the bootstrap std of the normal, untransformed
+          % residuals
           signflips                              = randi(2,[nSubj,1])*2-3;
-          resid_bootstrap                        = resid*spdiags(signflips, 0, nSubj, nSubj);
-          resid_bootstrap                        = reshape(resid_bootstrap, [dim nSubj]);
-          resid_field                            = sum(resid_bootstrap, 3)/sqrt(nSubj);
-          % Re-standardizing by bootstrap standard deviation
-          boot_std                               = std(resid_bootstrap, 0, 3);
-          resid_field                            = resid_field./boot_std;
+          unstandardized_resid_bootstrap         = unstandardized_resid*spdiags(signflips, 0, nSubj, nSubj);
+          unstandardized_resid_bootstrap         = reshape(unstandardized_resid_bootstrap, [dim nSubj]);
+          data_bootstrap                         = bsxfun(@plus, unstandardized_resid_bootstrap, observed_mean);
+          boot_mean                              = mean(data_bootstrap,3);
+          boot_std = reshape(...
+            biasmystd(reshape(data_bootstrap,[prod(dim) nSubj]),stdblk),...
+                dim);
+          boot_cohen_d     = boot_mean./boot_std;
+          boot_cohen_d_std = sqrt(1+boot_cohen_d.^2/2);
+          
+          % Creating the cohens d residual field and standardizing
+          cohen_resid_bootstrap                  = cohen_resid*spdiags(signflips, 0, nSubj, nSubj);
+          cohen_resid_bootstrap                  = reshape(cohen_resid_bootstrap, [dim nSubj]);
+          cohen_resid_field                      = sum(cohen_resid_bootstrap, 3)/sqrt(nSubj);
+          cohen_resid_field                      = cohen_resid_field./boot_cohen_d_std;
           
           % Calculating the maximum over the weighted interpolated true boundary edges
-          true_boundary_values = getBdryvalues(resid_field, Sig_boundary_edges);
+          true_boundary_values = getBdryvalues(cohen_resid_field, Sig_boundary_edges);
           supG_raw(k)          = max(abs(true_boundary_values)); 
           
           % Calculating the maximum over the weighted interpolated observed boundary edges
-          weighted_boundary_values = getBdryvalues(resid_field, observed_boundary_edges);
+          weighted_boundary_values = getBdryvalues(cohen_resid_field, observed_boundary_edges);
           supG_observed(k)         = max(abs(weighted_boundary_values));   
       end
       
