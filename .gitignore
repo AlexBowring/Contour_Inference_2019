@@ -1,0 +1,4 @@
+Sim_??_results/
+*.nii
+*.nii.gz
+Sim_*.mat
