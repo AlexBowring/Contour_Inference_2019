@@ -1,4 +1,4 @@
-function Sim_04(nSubj,SvNm,nRlz)
+function Sim_05(nSubj,SvNm,nRlz)
 %
 % Creates a 2D images of linearly increasing signal from L to R, and then applies the standardized effects Contour Inference method
 % for each of the proposed options
