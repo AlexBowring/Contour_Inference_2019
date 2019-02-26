@@ -16,18 +16,32 @@ function Y = create_noise(wdim, noise_type, var, smo, trnind)
 %
 
 noise = randn(wdim);
+D     = length(size(noise));
 
-% Smoothing the noise, note: this uses functions from SPM8
-[Noises, tt] = spm_conv(noise, smo, smo);
-Noises       =  Noises/sqrt(tt);
-tNoises      =  Noises(trnind{1}, trnind{2});
+switch D
+    case 2
+        % Smoothing the noise, note: this uses functions from SPM8
+        [Noises, tt] = spm_conv(noise, smo, smo);
+        Noises       = Noises/sqrt(tt);
+        tNoises      = Noises(trnind{1}, trnind{2});
+        dim          = size(tNoises);
 
-% Smoothing the noise
-
-switch(noise_type)
-	case 'homo'
-		Y = var.*tNoises;
-	case 'ramp'
-		non_stationary_sd = repmat(linspace(var(1), var(2)), dim(2), 1)';
-		Y = non_stationary_sd.*tNoises;
+        switch(noise_type)
+            case 'homo'
+                Y = var.*tNoises;
+            case 'ramp'
+                non_stationary_sd = repmat(linspace(var(1), var(2)), dim(2), 1)';
+                Y = non_stationary_sd.*tNoises;
+        end
+    case 3
+        % Smoothing the noise, note: this uses functions from SPM8
+        Noises = zeros(wdim);
+        tt     = spm_smooth(noise,Noises,smo*ones(1,3));
+        Noises = Noises/sqrt(tt);      
+        tNoises = Noises(trnind{1},trnind{2},trnind{3});  
+        
+        switch(noise_type)
+            case 'homo'
+                Y = var.*tNoises;
+        end
 end

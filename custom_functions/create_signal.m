@@ -32,12 +32,23 @@ switch(signal_type)
 		end
 	case 'circle'
         % Create smooth circular signal and truncates, therefore wdim
-        % musted be entere as dim
+        % must be entered as dim
 		Sig = CircularSignal(dim, param(2), param(1), 0);
         [Sigs, ss]  = spm_conv(Sig, smo, smo);
         % Truncate to avoid edge effects
         tSigs       = Sigs(trnind{1}, trnind{2});
         maxtSigs    = max(tSigs(:));
         Y           = (param(1)/maxtSigs)*tSigs;
+    case 'sphere'
+        % Create smooth spherical signal and truncates, therefore wdim
+        % must be entered as dim
+		Sig = SpheroidSignal(dim, param(2), param(1), 0);
+        % Smoothing the signal
+        Sigs = zeros(dim);
+        ss   = spm_smooth(Sig,Sigs,smo*ones(1,3));
+        % Truncate to avoid edge effects
+        tSigs          = Sigs(trnind{1}, trnind{2}, trnind{3});
+        maxtSigs       = max(tSigs(:));
+        Y              = (param(1)/maxtSigs)*tSigs;     
 end
 
