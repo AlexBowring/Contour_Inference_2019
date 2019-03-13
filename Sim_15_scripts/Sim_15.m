@@ -44,12 +44,6 @@ observed_data  = zeros([prod(dim) nSubj]);
 
 % This stores the vector SupG for each run
 % This vector stores the result for each realisation on whether AC^+ < AC < AC^ for each level of smoothing (1 if true, 0 if false) 
-subset_success_vector_raw_80           = zeros(nRlz, 1); 
-subset_success_vector_raw_90           = zeros(nRlz, 1);
-subset_success_vector_raw_95           = zeros(nRlz, 1);
-subset_success_vector_observed_80           = zeros(nRlz, 1); 
-subset_success_vector_observed_90           = zeros(nRlz, 1);
-subset_success_vector_observed_95           = zeros(nRlz, 1);
 subset_success_vector_raw_80_alternate = zeros(nRlz, 1); 
 subset_success_vector_raw_90_alternate = zeros(nRlz, 1);
 subset_success_vector_raw_95_alternate = zeros(nRlz, 1);
@@ -57,33 +51,66 @@ subset_success_vector_observed_80_alternate = zeros(nRlz, 1);
 subset_success_vector_observed_90_alternate = zeros(nRlz, 1);
 subset_success_vector_observed_95_alternate = zeros(nRlz, 1);
 
+max_min_subset_success_vector_raw_80_alternate = zeros(nRlz, 1); 
+max_min_subset_success_vector_raw_90_alternate = zeros(nRlz, 1);
+max_min_subset_success_vector_raw_95_alternate = zeros(nRlz, 1);
+max_min_subset_success_vector_observed_80_alternate = zeros(nRlz, 1); 
+max_min_subset_success_vector_observed_90_alternate = zeros(nRlz, 1);
+max_min_subset_success_vector_observed_95_alternate = zeros(nRlz, 1);
+
 %- This vector stores the threshold value 'c' for each run
 threshold_raw_80_store                  = zeros(nRlz, 1);
 threshold_raw_90_store                  = zeros(nRlz, 1);
 threshold_raw_95_store                  = zeros(nRlz, 1);
 
+threshold_max_raw_80_store                  = zeros(nRlz, 1);
+threshold_max_raw_90_store                  = zeros(nRlz, 1);
+threshold_max_raw_95_store                  = zeros(nRlz, 1);
+
+threshold_min_raw_80_store                  = zeros(nRlz, 1);
+threshold_min_raw_90_store                  = zeros(nRlz, 1);
+threshold_min_raw_95_store                  = zeros(nRlz, 1);
+
 threshold_observed_80_store                  = zeros(nRlz, 1);
 threshold_observed_90_store                  = zeros(nRlz, 1);
 threshold_observed_95_store                  = zeros(nRlz, 1);
 
+threshold_max_observed_80_store                  = zeros(nRlz, 1);
+threshold_max_observed_90_store                  = zeros(nRlz, 1);
+threshold_max_observed_95_store                  = zeros(nRlz, 1);
+
+threshold_min_observed_80_store                  = zeros(nRlz, 1);
+threshold_min_observed_90_store                  = zeros(nRlz, 1);
+threshold_min_observed_95_store                  = zeros(nRlz, 1);
+
 %- This vector stores the percentage volumes A^+_c/A_c, A^_c/A_c, A^-_c/A_c
 lower_contour_raw_80_volume_prct_store                     = zeros(nRlz, 1);
 upper_contour_raw_80_volume_prct_store                     = zeros(nRlz, 1);
-
 lower_contour_raw_90_volume_prct_store                     = zeros(nRlz, 1);
 upper_contour_raw_90_volume_prct_store                     = zeros(nRlz, 1);
-
 lower_contour_raw_95_volume_prct_store                     = zeros(nRlz, 1);
 upper_contour_raw_95_volume_prct_store                     = zeros(nRlz, 1);
 
+max_min_lower_contour_raw_80_volume_prct_store                     = zeros(nRlz, 1);
+max_min_upper_contour_raw_80_volume_prct_store                     = zeros(nRlz, 1);
+max_min_lower_contour_raw_90_volume_prct_store                     = zeros(nRlz, 1);
+max_min_upper_contour_raw_90_volume_prct_store                     = zeros(nRlz, 1);
+max_min_lower_contour_raw_95_volume_prct_store                     = zeros(nRlz, 1);
+max_min_upper_contour_raw_95_volume_prct_store                     = zeros(nRlz, 1);
+
 lower_contour_observed_80_volume_prct_store                     = zeros(nRlz, 1);
 upper_contour_observed_80_volume_prct_store                     = zeros(nRlz, 1);
-
 lower_contour_observed_90_volume_prct_store                     = zeros(nRlz, 1);
 upper_contour_observed_90_volume_prct_store                     = zeros(nRlz, 1);
-
 lower_contour_observed_95_volume_prct_store                     = zeros(nRlz, 1);
 upper_contour_observed_95_volume_prct_store                     = zeros(nRlz, 1);
+
+max_min_lower_contour_observed_80_volume_prct_store                     = zeros(nRlz, 1);
+max_min_upper_contour_observed_80_volume_prct_store                     = zeros(nRlz, 1);
+max_min_lower_contour_observed_90_volume_prct_store                     = zeros(nRlz, 1);
+max_min_upper_contour_observed_90_volume_prct_store                     = zeros(nRlz, 1);
+max_min_lower_contour_observed_95_volume_prct_store                     = zeros(nRlz, 1);
+max_min_upper_contour_observed_95_volume_prct_store                     = zeros(nRlz, 1);
 
 % This vector stores the number of violations either way
 lower_condition_80_violations = zeros(nRlz, 1);
@@ -93,6 +120,13 @@ upper_condition_90_violations = zeros(nRlz, 1);
 lower_condition_95_violations = zeros(nRlz, 1);
 upper_condition_95_violations = zeros(nRlz, 1);
 
+max_min_lower_condition_80_violations = zeros(nRlz, 1);
+max_min_upper_condition_80_violations = zeros(nRlz, 1);
+max_min_lower_condition_90_violations = zeros(nRlz, 1);
+max_min_upper_condition_90_violations = zeros(nRlz, 1);
+max_min_lower_condition_95_violations = zeros(nRlz, 1);
+max_min_upper_condition_95_violations = zeros(nRlz, 1);
+
 lower_condition_80_violations_observed = zeros(nRlz, 1);
 upper_condition_80_violations_observed = zeros(nRlz, 1);
 lower_condition_90_violations_observed = zeros(nRlz, 1);
@@ -100,12 +134,29 @@ upper_condition_90_violations_observed = zeros(nRlz, 1);
 lower_condition_95_violations_observed = zeros(nRlz, 1);
 upper_condition_95_violations_observed = zeros(nRlz, 1);
 
+max_min_lower_condition_80_violations_observed = zeros(nRlz, 1);
+max_min_upper_condition_80_violations_observed = zeros(nRlz, 1);
+max_min_lower_condition_90_violations_observed = zeros(nRlz, 1);
+max_min_upper_condition_90_violations_observed = zeros(nRlz, 1);
+max_min_lower_condition_95_violations_observed = zeros(nRlz, 1);
+max_min_upper_condition_95_violations_observed = zeros(nRlz, 1);
+
 % This stores the vector SupG for each run
 supG_raw_store                   = zeros(nBoot, nRlz);
+supG_max_raw_store               = zeros(nBoot, nRlz);
+supG_min_raw_store               = zeros(nBoot, nRlz);
+
 supG_observed_store              = zeros(nBoot, nRlz);
+supG_max_observed_store          = zeros(nBoot, nRlz);
+supG_min_observed_store          = zeros(nBoot, nRlz);
 
 supG_raw                         = zeros(nBoot,1);
+supG_max_raw                     = zeros(nBoot,1);
+supG_min_raw                     = zeros(nBoot,1);
+
 supG_observed                    = zeros(nBoot,1);
+supG_max_observed                = zeros(nBoot,1);
+supG_min_observed                = zeros(nBoot,1);
 
 % Creating a sphere of signal
 Sig = create_signal(wdim, 'sphere', [mag, rad], smo, trnind);
@@ -145,7 +196,7 @@ for t=1:nRlz
       
       observed_cohen_d = observed_mean./observed_std;
       
-      monte_carlo_cohen_d_boundary_values(:,t) = getBdryvalues(observed_cohen_d, Sig_boundary_edges);
+      monte_carlo_cohen_d_boundary_values(:,t) = getBdryvalues(reshape(observed_cohen_d, dim), Sig_boundary_edges);
       
       observed_cohen_d_std        = sqrt(1+observed_cohen_d.^2/2); 
       
@@ -430,14 +481,14 @@ for t=1:nRlz
     max_min_lower_condition_95 = thr + supGa_min_raw_95*tau*observed_cohen_d_std;
     max_min_upper_condition_95 = thr + supGa_max_raw_95*tau*observed_cohen_d_std;
     
-    max_min_lower_condition_80_boundary_values = getBdryvalues(lower_condition_80, Sig_boundary_edges);
-    max_min_upper_condition_80_boundary_values = getBdryvalues(upper_condition_80, Sig_boundary_edges);
+    max_min_lower_condition_80_boundary_values = getBdryvalues(max_min_lower_condition_80, Sig_boundary_edges);
+    max_min_upper_condition_80_boundary_values = getBdryvalues(max_min_upper_condition_80, Sig_boundary_edges);
 
-    max_min_lower_condition_90_boundary_values = getBdryvalues(lower_condition_90, Sig_boundary_edges);
-    max_min_upper_condition_90_boundary_values = getBdryvalues(upper_condition_90, Sig_boundary_edges);
+    max_min_lower_condition_90_boundary_values = getBdryvalues(max_min_lower_condition_90, Sig_boundary_edges);
+    max_min_upper_condition_90_boundary_values = getBdryvalues(max_min_upper_condition_90, Sig_boundary_edges);
     
-    max_min_lower_condition_95_boundary_values = getBdryvalues(lower_condition_95, Sig_boundary_edges);
-    max_min_upper_condition_95_boundary_values = getBdryvalues(upper_condition_95, Sig_boundary_edges);
+    max_min_lower_condition_95_boundary_values = getBdryvalues(max_min_lower_condition_95, Sig_boundary_edges);
+    max_min_upper_condition_95_boundary_values = getBdryvalues(max_min_upper_condition_95, Sig_boundary_edges);
     
     max_min_lower_condition_80_success = observed_cohen_d_true_boundary_values < max_min_lower_condition_80_boundary_values;
     max_min_upper_condition_80_success = observed_cohen_d_true_boundary_values >= max_min_upper_condition_80_boundary_values;
@@ -493,8 +544,8 @@ for t=1:nRlz
     max_min_upper_condition_80_observed = thr + supGa_max_observed_80*tau*observed_cohen_d_std;
     max_min_lower_condition_90_observed = thr + supGa_min_observed_90*tau*observed_cohen_d_std;
     max_min_upper_condition_90_observed = thr + supGa_max_observed_90*tau*observed_cohen_d_std;
-    max_min_lower_condition_95_observed = thr + supGa_min_observed_80*tau*observed_cohen_d_std;
-    max_min_upper_condition_95_observed = thr + supGa_max_observed_80*tau*observed_cohen_d_std;
+    max_min_lower_condition_95_observed = thr + supGa_min_observed_95*tau*observed_cohen_d_std;
+    max_min_upper_condition_95_observed = thr + supGa_max_observed_95*tau*observed_cohen_d_std;
     
     max_min_lower_condition_80_observed_boundary_values = getBdryvalues(max_min_lower_condition_80_observed, Sig_boundary_edges);
     max_min_upper_condition_80_observed_boundary_values = getBdryvalues(max_min_upper_condition_80_observed, Sig_boundary_edges);
@@ -517,8 +568,8 @@ for t=1:nRlz
     
     max_min_lower_condition_95_observed_success = observed_cohen_d_true_boundary_values < max_min_lower_condition_95_observed_boundary_values;
     max_min_upper_condition_95_observed_success = observed_cohen_d_true_boundary_values >= max_min_upper_condition_95_observed_boundary_values;
-    lower_condition_95_violations_observed(t) = sum(max_min_lower_condition_95_observed_success);
-    upper_condition_95_violations_observed(t) = sum(max_min_upper_condition_95_observed_success);
+    max_min_lower_condition_95_violations_observed(t) = sum(max_min_lower_condition_95_observed_success);
+    max_min_upper_condition_95_violations_observed(t) = sum(max_min_upper_condition_95_observed_success);
     
     % Testing the subset condition (Ac^- < Ac < Ac^+) by comparing
     % binarized sets as well as the linear interpolated boundary method for
@@ -648,11 +699,32 @@ max_min_percentage_success_vector_observed_90_alternate          = mean(max_min_
 max_min_percentage_success_vector_observed_95_alternate          = mean(max_min_subset_success_vector_observed_95_alternate, 1);
 
 eval(['save ' SvNm ' nSubj nRlz dim smo mag rimFWHM thr nBoot '... 
-      'threshold_raw_80_store threshold_raw_90_store threshold_raw_95_store threshold_observed_80_store threshold_observed_90_store threshold_observed_95_store '...
-      'subset_success_vector_raw_80 subset_success_vector_raw_90 subset_success_vector_raw_95 subset_success_vector_observed_80 subset_success_vector_observed_90 subset_success_vector_observed_95 subset_success_vector_raw_80_alternate subset_success_vector_raw_90_alternate subset_success_vector_raw_95_alternate subset_success_vector_observed_80_alternate subset_success_vector_observed_90_alternate subset_success_vector_observed_95_alternate '...
-      'percentage_success_vector_raw_80 percentage_success_vector_raw_90 percentage_success_vector_raw_95 percentage_success_vector_observed_80 percentage_success_vector_observed_90 percentage_success_vector_observed_95 percentage_success_vector_raw_80_alternate percentage_success_vector_raw_90_alternate percentage_success_vector_raw_95_alternate percentage_success_vector_observed_80_alternate percentage_success_vector_observed_90_alternate percentage_success_vector_observed_95_alternate '...
-      'supG_raw_store supG_observed_store '...
+      'threshold_raw_80_store threshold_raw_90_store threshold_raw_95_store '...
+      'threshold_min_raw_80_store threshold_min_raw_90_store threshold_min_raw_95_store '...
+      'threshold_max_raw_80_store threshold_max_raw_90_store threshold_max_raw_95_store '...
+      'threshold_observed_80_store threshold_observed_90_store threshold_observed_95_store '...
+      'threshold_min_observed_80_store threshold_min_observed_90_store threshold_min_observed_95_store '...
+      'threshold_max_observed_80_store threshold_max_observed_90_store threshold_max_observed_95_store '...
+      'subset_success_vector_raw_80_alternate subset_success_vector_raw_90_alternate subset_success_vector_raw_95_alternate '...
+      'max_min_subset_success_vector_raw_80_alternate max_min_subset_success_vector_raw_90_alternate max_min_subset_success_vector_raw_95_alternate '...
+      'subset_success_vector_observed_80_alternate subset_success_vector_observed_90_alternate subset_success_vector_observed_95_alternate '...
+      'max_min_subset_success_vector_observed_80_alternate max_min_subset_success_vector_observed_90_alternate max_min_subset_success_vector_observed_95_alternate '...
+      'percentage_success_vector_raw_80_alternate percentage_success_vector_raw_90_alternate percentage_success_vector_raw_95_alternate '...
+      'max_min_percentage_success_vector_raw_80_alternate max_min_percentage_success_vector_raw_90_alternate max_min_percentage_success_vector_raw_95_alternate '...
+      'percentage_success_vector_observed_80_alternate percentage_success_vector_observed_90_alternate percentage_success_vector_observed_95_alternate '...
+      'max_min_percentage_success_vector_observed_80_alternate max_min_percentage_success_vector_observed_90_alternate max_min_percentage_success_vector_observed_95_alternate '...
+      'supG_raw_store supG_min_raw_store supG_max_raw_store supG_observed_store supG_min_observed_store supG_max_observed_store '...
       'middle_contour_volume '...
-      'lower_contour_raw_80_volume_prct_store lower_contour_raw_90_volume_prct_store lower_contour_raw_95_volume_prct_store lower_contour_observed_80_volume_prct_store lower_contour_observed_90_volume_prct_store lower_contour_observed_95_volume_prct_store '...
-      'upper_contour_raw_80_volume_prct_store upper_contour_raw_90_volume_prct_store upper_contour_raw_95_volume_prct_store upper_contour_observed_80_volume_prct_store upper_contour_observed_90_volume_prct_store upper_contour_observed_95_volume_prct_store '...
-      'monte_carlo_cohen_d_boundary_values ' ...])
+      'lower_contour_raw_80_volume_prct_store lower_contour_raw_90_volume_prct_store lower_contour_raw_95_volume_prct_store '...
+      'max_min_lower_contour_raw_80_volume_prct_store max_min_lower_contour_raw_90_volume_prct_store max_min_lower_contour_raw_95_volume_prct_store '...
+      'lower_contour_observed_80_volume_prct_store lower_contour_observed_90_volume_prct_store lower_contour_observed_95_volume_prct_store '...
+      'max_min_lower_contour_observed_80_volume_prct_store max_min_lower_contour_observed_90_volume_prct_store max_min_lower_contour_observed_95_volume_prct_store '...
+      'upper_contour_raw_80_volume_prct_store upper_contour_raw_90_volume_prct_store upper_contour_raw_95_volume_prct_store '...
+      'max_min_upper_contour_raw_80_volume_prct_store max_min_upper_contour_raw_90_volume_prct_store max_min_upper_contour_raw_95_volume_prct_store '...
+      'upper_contour_observed_80_volume_prct_store upper_contour_observed_90_volume_prct_store upper_contour_observed_95_volume_prct_store '...
+      'max_min_upper_contour_observed_80_volume_prct_store max_min_upper_contour_observed_90_volume_prct_store max_min_upper_contour_observed_95_volume_prct_store '...
+      'lower_condition_80_violations lower_condition_90_violations lower_condition_95_violations upper_condition_80_violations upper_condition_90_violations upper_condition_95_violations '...
+      'max_min_lower_condition_80_violations max_min_lower_condition_90_violations max_min_lower_condition_95_violations max_min_upper_condition_80_violations max_min_upper_condition_90_violations max_min_upper_condition_95_violations '...
+      'lower_condition_80_violations_observed lower_condition_90_violations_observed lower_condition_95_violations_observed upper_condition_80_violations_observed upper_condition_90_violations_observed upper_condition_95_violations_observed '...
+      'max_min_lower_condition_80_violations_observed max_min_lower_condition_90_violations_observed max_min_lower_condition_95_violations_observed max_min_upper_condition_80_violations_observed max_min_upper_condition_90_violations_observed max_min_upper_condition_95_violations_observed '...
+      'monte_carlo_cohen_d_boundary_values'])
