@@ -459,15 +459,15 @@ for t=1:nRlz
           mammen_30_subj                                  = mammen_120_subj(1:nSubj/4);
           
           %% idea one bootstrap
-          idea_one_signflips_bootstrap_120_subj_124_dim = idea_one_residuals_120_subj_124_dim*spdiags(signflips_120_subj);
-          idea_one_signflips_bootstrap_60_subj_124_dim = idea_one_residuals_60_subj_124_dim*spdiags(signflips_60_subj);
-          idea_one_signflips_bootstrap_30_subj_124_dim = idea_one_residuals_30_subj_124_dim*spdiags(signflips_30_subj);
-          idea_one_gauss_bootstrap_120_subj_124_dim = idea_one_residuals_120_subj_124_dim*spdiags(gauss_120_subj);
-          idea_one_gauss_bootstrap_60_subj_124_dim = idea_one_residuals_60_subj_124_dim*spdiags(gauss_60_subj);
-          idea_one_gauss_bootstrap_30_subj_124_dim = idea_one_residuals_30_subj_124_dim*spdiags(gauss_30_subj);
-          idea_one_mammen_bootstrap_120_subj_124_dim = idea_one_residuals_120_subj_124_dim*spdiags(mammen_120_subj);
-          idea_one_mammen_bootstrap_60_subj_124_dim = idea_one_residuals_60_subj_124_dim*spdiags(mammen_60_subj);
-          idea_one_mammen_bootstrap_30_subj_124_dim = idea_one_residuals_30_subj_124_dim*spdiags(mammen_30_subj);
+          idea_one_signflips_bootstrap_120_subj_124_dim = idea_one_residuals_120_subj_124_dim*spdiags(signflips_120_subj, 0, nSubj, nSubj);
+          idea_one_signflips_bootstrap_60_subj_124_dim = idea_one_residuals_60_subj_124_dim*spdiags(signflips_60_subj, 0, nSubj/2, nSubj/2);
+          idea_one_signflips_bootstrap_30_subj_124_dim = idea_one_residuals_30_subj_124_dim*spdiags(signflips_30_subj, 0, nSubj/4, nSubj/4);
+          idea_one_gauss_bootstrap_120_subj_124_dim = idea_one_residuals_120_subj_124_dim*spdiags(gauss_120_subj, 0, nSubj, nSubj);
+          idea_one_gauss_bootstrap_60_subj_124_dim = idea_one_residuals_60_subj_124_dim*spdiags(gauss_60_subj, 0, nSubj/2, nSubj/2);
+          idea_one_gauss_bootstrap_30_subj_124_dim = idea_one_residuals_30_subj_124_dim*spdiags(gauss_30_subj, 0, nSubj/4, nSubj/4);
+          idea_one_mammen_bootstrap_120_subj_124_dim = idea_one_residuals_120_subj_124_dim*spdiags(mammen_120_subj, 0, nSubj, nSubj);
+          idea_one_mammen_bootstrap_60_subj_124_dim = idea_one_residuals_60_subj_124_dim*spdiags(mammen_60_subj, 0, nSubj/2, nSubj/2);
+          idea_one_mammen_bootstrap_30_subj_124_dim = idea_one_residuals_30_subj_124_dim*spdiags(mammen_30_subj, 0, nSubj/4, nSubj/4);
           
           idea_one_signflips_resid_field_120_subj_124_dim = sum(idea_one_signflips_bootstrap_120_subj_124_dim, 2)/sqrt(nSubj);
           idea_one_signflips_resid_field_60_subj_124_dim = sum(idea_one_signflips_bootstrap_60_subj_124_dim, 2)/sqrt(nSubj/2);
@@ -556,15 +556,15 @@ for t=1:nRlz
           idea_one_mammen_tboot_min_supG_resid_field_30_subj_124_dim(k) = min(idea_one_mammen_tboot_resid_field_30_subj_124_dim);
           
           %% idea Fabian bootstrap
-          idea_f_signflips_bootstrap_120_subj_124_dim = idea_f_residuals_120_subj_124_dim*spdiags(signflips_120_subj);
-          idea_f_signflips_bootstrap_60_subj_124_dim = idea_f_residuals_60_subj_124_dim*spdiags(signflips_60_subj);
-          idea_f_signflips_bootstrap_30_subj_124_dim = idea_f_residuals_30_subj_124_dim*spdiags(signflips_30_subj);
-          idea_f_gauss_bootstrap_120_subj_124_dim = idea_f_residuals_120_subj_124_dim*spdiags(gauss_120_subj);
-          idea_f_gauss_bootstrap_60_subj_124_dim = idea_f_residuals_60_subj_124_dim*spdiags(gauss_60_subj);
-          idea_f_gauss_bootstrap_30_subj_124_dim = idea_f_residuals_30_subj_124_dim*spdiags(gauss_30_subj);
-          idea_f_mammen_bootstrap_120_subj_124_dim = idea_f_residuals_120_subj_124_dim*spdiags(mammen_120_subj);
-          idea_f_mammen_bootstrap_60_subj_124_dim = idea_f_residuals_60_subj_124_dim*spdiags(mammen_60_subj);
-          idea_f_mammen_bootstrap_30_subj_124_dim = idea_f_residuals_30_subj_124_dim*spdiags(mammen_30_subj);
+          idea_f_signflips_bootstrap_120_subj_124_dim = idea_f_residuals_120_subj_124_dim*spdiags(signflips_120_subj, 0, nSubj, nSubj);
+          idea_f_signflips_bootstrap_60_subj_124_dim = idea_f_residuals_60_subj_124_dim*spdiags(signflips_60_subj, 0, nSubj/2, nSubj/2);
+          idea_f_signflips_bootstrap_30_subj_124_dim = idea_f_residuals_30_subj_124_dim*spdiags(signflips_30_subj, 0, nSubj/4, nSubj/4);
+          idea_f_gauss_bootstrap_120_subj_124_dim = idea_f_residuals_120_subj_124_dim*spdiags(gauss_120_subj, 0, nSubj, nSubj);
+          idea_f_gauss_bootstrap_60_subj_124_dim = idea_f_residuals_60_subj_124_dim*spdiags(gauss_60_subj, 0, nSubj/2, nSubj/2);
+          idea_f_gauss_bootstrap_30_subj_124_dim = idea_f_residuals_30_subj_124_dim*spdiags(gauss_30_subj, 0, nSubj/4, nSubj/4);
+          idea_f_mammen_bootstrap_120_subj_124_dim = idea_f_residuals_120_subj_124_dim*spdiags(mammen_120_subj, 0, nSubj, nSubj);
+          idea_f_mammen_bootstrap_60_subj_124_dim = idea_f_residuals_60_subj_124_dim*spdiags(mammen_60_subj, 0, nSubj/2, nSubj/2);
+          idea_f_mammen_bootstrap_30_subj_124_dim = idea_f_residuals_30_subj_124_dim*spdiags(mammen_30_subj, 0, nSubj/4, nSubj/4);
           
           idea_f_signflips_resid_field_120_subj_124_dim = sum(idea_f_signflips_bootstrap_120_subj_124_dim, 2)/sqrt(nSubj);
           idea_f_signflips_resid_field_60_subj_124_dim = sum(idea_f_signflips_bootstrap_60_subj_124_dim, 2)/sqrt(nSubj/2);
@@ -718,15 +718,15 @@ for t=1:nRlz
           mammen_30_subj                                  = mammen_120_subj(1:nSubj/4);
           
           %% idea one bootstrap
-          idea_one_signflips_bootstrap_120_subj_60_dim = idea_one_residuals_120_subj_60_dim*spdiags(signflips_120_subj);
-          idea_one_signflips_bootstrap_60_subj_60_dim = idea_one_residuals_60_subj_60_dim*spdiags(signflips_60_subj);
-          idea_one_signflips_bootstrap_30_subj_60_dim = idea_one_residuals_30_subj_60_dim*spdiags(signflips_30_subj);
-          idea_one_gauss_bootstrap_120_subj_60_dim = idea_one_residuals_120_subj_60_dim*spdiags(gauss_120_subj);
-          idea_one_gauss_bootstrap_60_subj_60_dim = idea_one_residuals_60_subj_60_dim*spdiags(gauss_60_subj);
-          idea_one_gauss_bootstrap_30_subj_60_dim = idea_one_residuals_30_subj_60_dim*spdiags(gauss_30_subj);
-          idea_one_mammen_bootstrap_120_subj_60_dim = idea_one_residuals_120_subj_60_dim*spdiags(mammen_120_subj);
-          idea_one_mammen_bootstrap_60_subj_60_dim = idea_one_residuals_60_subj_60_dim*spdiags(mammen_60_subj);
-          idea_one_mammen_bootstrap_30_subj_60_dim = idea_one_residuals_30_subj_60_dim*spdiags(mammen_30_subj);
+          idea_one_signflips_bootstrap_120_subj_60_dim = idea_one_residuals_120_subj_60_dim*spdiags(signflips_120_subj, 0, nSubj, nSubj);
+          idea_one_signflips_bootstrap_60_subj_60_dim = idea_one_residuals_60_subj_60_dim*spdiags(signflips_60_subj, 0, nSubj/2, nSubj/2);
+          idea_one_signflips_bootstrap_30_subj_60_dim = idea_one_residuals_30_subj_60_dim*spdiags(signflips_30_subj, 0, nSubj/4, nSubj/4);
+          idea_one_gauss_bootstrap_120_subj_60_dim = idea_one_residuals_120_subj_60_dim*spdiags(gauss_120_subj, 0, nSubj, nSubj);
+          idea_one_gauss_bootstrap_60_subj_60_dim = idea_one_residuals_60_subj_60_dim*spdiags(gauss_60_subj, 0, nSubj/2, nSubj/2);
+          idea_one_gauss_bootstrap_30_subj_60_dim = idea_one_residuals_30_subj_60_dim*spdiags(gauss_30_subj, 0, nSubj/4, nSubj/4);
+          idea_one_mammen_bootstrap_120_subj_60_dim = idea_one_residuals_120_subj_60_dim*spdiags(mammen_120_subj, 0, nSubj, nSubj);
+          idea_one_mammen_bootstrap_60_subj_60_dim = idea_one_residuals_60_subj_60_dim*spdiags(mammen_60_subj, 0, nSubj/2, nSubj/2);
+          idea_one_mammen_bootstrap_30_subj_60_dim = idea_one_residuals_30_subj_60_dim*spdiags(mammen_30_subj, 0, nSubj/4, nSubj/4);
           
           idea_one_signflips_resid_field_120_subj_60_dim = sum(idea_one_signflips_bootstrap_120_subj_60_dim, 2)/sqrt(nSubj);
           idea_one_signflips_resid_field_60_subj_60_dim = sum(idea_one_signflips_bootstrap_60_subj_60_dim, 2)/sqrt(nSubj/2);
@@ -815,15 +815,15 @@ for t=1:nRlz
           idea_one_mammen_tboot_min_supG_resid_field_30_subj_60_dim(k) = min(idea_one_mammen_tboot_resid_field_30_subj_60_dim);
           
           %% idea Fabian bootstrap
-          idea_f_signflips_bootstrap_120_subj_60_dim = idea_f_residuals_120_subj_60_dim*spdiags(signflips_120_subj);
-          idea_f_signflips_bootstrap_60_subj_60_dim = idea_f_residuals_60_subj_60_dim*spdiags(signflips_60_subj);
-          idea_f_signflips_bootstrap_30_subj_60_dim = idea_f_residuals_30_subj_60_dim*spdiags(signflips_30_subj);
-          idea_f_gauss_bootstrap_120_subj_60_dim = idea_f_residuals_120_subj_60_dim*spdiags(gauss_120_subj);
-          idea_f_gauss_bootstrap_60_subj_60_dim = idea_f_residuals_60_subj_60_dim*spdiags(gauss_60_subj);
-          idea_f_gauss_bootstrap_30_subj_60_dim = idea_f_residuals_30_subj_60_dim*spdiags(gauss_30_subj);
-          idea_f_mammen_bootstrap_120_subj_60_dim = idea_f_residuals_120_subj_60_dim*spdiags(mammen_120_subj);
-          idea_f_mammen_bootstrap_60_subj_60_dim = idea_f_residuals_60_subj_60_dim*spdiags(mammen_60_subj);
-          idea_f_mammen_bootstrap_30_subj_60_dim = idea_f_residuals_30_subj_60_dim*spdiags(mammen_30_subj);
+          idea_f_signflips_bootstrap_120_subj_60_dim = idea_f_residuals_120_subj_60_dim*spdiags(signflips_120_subj, 0, nSubj, nSubj);
+          idea_f_signflips_bootstrap_60_subj_60_dim = idea_f_residuals_60_subj_60_dim*spdiags(signflips_60_subj, 0, nSubj/2, nSubj/2);
+          idea_f_signflips_bootstrap_30_subj_60_dim = idea_f_residuals_30_subj_60_dim*spdiags(signflips_30_subj, 0, nSubj/4, nSubj/4);
+          idea_f_gauss_bootstrap_120_subj_60_dim = idea_f_residuals_120_subj_60_dim*spdiags(gauss_120_subj, 0, nSubj, nSubj);
+          idea_f_gauss_bootstrap_60_subj_60_dim = idea_f_residuals_60_subj_60_dim*spdiags(gauss_60_subj, 0, nSubj/2, nSubj/2);
+          idea_f_gauss_bootstrap_30_subj_60_dim = idea_f_residuals_30_subj_60_dim*spdiags(gauss_30_subj, 0, nSubj/4, nSubj/4);
+          idea_f_mammen_bootstrap_120_subj_60_dim = idea_f_residuals_120_subj_60_dim*spdiags(mammen_120_subj, 0, nSubj, nSubj);
+          idea_f_mammen_bootstrap_60_subj_60_dim = idea_f_residuals_60_subj_60_dim*spdiags(mammen_60_subj, 0, nSubj/2, nSubj/2);
+          idea_f_mammen_bootstrap_30_subj_60_dim = idea_f_residuals_30_subj_60_dim*spdiags(mammen_30_subj, 0, nSubj/4, nSubj/4);
           
           idea_f_signflips_resid_field_120_subj_60_dim = sum(idea_f_signflips_bootstrap_120_subj_60_dim, 2)/sqrt(nSubj);
           idea_f_signflips_resid_field_60_subj_60_dim = sum(idea_f_signflips_bootstrap_60_subj_60_dim, 2)/sqrt(nSubj/2);
@@ -977,15 +977,15 @@ for t=1:nRlz
           mammen_30_subj                                  = mammen_120_subj(1:nSubj/4);
           
           %% idea one bootstrap
-          idea_one_signflips_bootstrap_120_subj_10_dim = idea_one_residuals_120_subj_10_dim*spdiags(signflips_120_subj);
-          idea_one_signflips_bootstrap_60_subj_10_dim = idea_one_residuals_60_subj_10_dim*spdiags(signflips_60_subj);
-          idea_one_signflips_bootstrap_30_subj_10_dim = idea_one_residuals_30_subj_10_dim*spdiags(signflips_30_subj);
-          idea_one_gauss_bootstrap_120_subj_10_dim = idea_one_residuals_120_subj_10_dim*spdiags(gauss_120_subj);
-          idea_one_gauss_bootstrap_60_subj_10_dim = idea_one_residuals_60_subj_10_dim*spdiags(gauss_60_subj);
-          idea_one_gauss_bootstrap_30_subj_10_dim = idea_one_residuals_30_subj_10_dim*spdiags(gauss_30_subj);
-          idea_one_mammen_bootstrap_120_subj_10_dim = idea_one_residuals_120_subj_10_dim*spdiags(mammen_120_subj);
-          idea_one_mammen_bootstrap_60_subj_10_dim = idea_one_residuals_60_subj_10_dim*spdiags(mammen_60_subj);
-          idea_one_mammen_bootstrap_30_subj_10_dim = idea_one_residuals_30_subj_10_dim*spdiags(mammen_30_subj);
+          idea_one_signflips_bootstrap_120_subj_10_dim = idea_one_residuals_120_subj_10_dim*spdiags(signflips_120_subj, 0, nSubj, nSubj);
+          idea_one_signflips_bootstrap_60_subj_10_dim = idea_one_residuals_60_subj_10_dim*spdiags(signflips_60_subj, 0, nSubj/2, nSubj/2);
+          idea_one_signflips_bootstrap_30_subj_10_dim = idea_one_residuals_30_subj_10_dim*spdiags(signflips_30_subj, 0, nSubj/4, nSubj/4);
+          idea_one_gauss_bootstrap_120_subj_10_dim = idea_one_residuals_120_subj_10_dim*spdiags(gauss_120_subj, 0, nSubj, nSubj);
+          idea_one_gauss_bootstrap_60_subj_10_dim = idea_one_residuals_60_subj_10_dim*spdiags(gauss_60_subj, 0, nSubj/2, nSubj/2);
+          idea_one_gauss_bootstrap_30_subj_10_dim = idea_one_residuals_30_subj_10_dim*spdiags(gauss_30_subj, 0, nSubj/4, nSubj/4);
+          idea_one_mammen_bootstrap_120_subj_10_dim = idea_one_residuals_120_subj_10_dim*spdiags(mammen_120_subj, 0, nSubj, nSubj);
+          idea_one_mammen_bootstrap_60_subj_10_dim = idea_one_residuals_60_subj_10_dim*spdiags(mammen_60_subj, 0, nSubj/2, nSubj/2);
+          idea_one_mammen_bootstrap_30_subj_10_dim = idea_one_residuals_30_subj_10_dim*spdiags(mammen_30_subj, 0, nSubj/4, nSubj/4);
           
           idea_one_signflips_resid_field_120_subj_10_dim = sum(idea_one_signflips_bootstrap_120_subj_10_dim, 2)/sqrt(nSubj);
           idea_one_signflips_resid_field_60_subj_10_dim = sum(idea_one_signflips_bootstrap_60_subj_10_dim, 2)/sqrt(nSubj/2);
@@ -1074,15 +1074,15 @@ for t=1:nRlz
           idea_one_mammen_tboot_min_supG_resid_field_30_subj_10_dim(k) = min(idea_one_mammen_tboot_resid_field_30_subj_10_dim);
           
           %% idea Fabian bootstrap
-          idea_f_signflips_bootstrap_120_subj_10_dim = idea_f_residuals_120_subj_10_dim*spdiags(signflips_120_subj);
-          idea_f_signflips_bootstrap_60_subj_10_dim = idea_f_residuals_60_subj_10_dim*spdiags(signflips_60_subj);
-          idea_f_signflips_bootstrap_30_subj_10_dim = idea_f_residuals_30_subj_10_dim*spdiags(signflips_30_subj);
-          idea_f_gauss_bootstrap_120_subj_10_dim = idea_f_residuals_120_subj_10_dim*spdiags(gauss_120_subj);
-          idea_f_gauss_bootstrap_60_subj_10_dim = idea_f_residuals_60_subj_10_dim*spdiags(gauss_60_subj);
-          idea_f_gauss_bootstrap_30_subj_10_dim = idea_f_residuals_30_subj_10_dim*spdiags(gauss_30_subj);
-          idea_f_mammen_bootstrap_120_subj_10_dim = idea_f_residuals_120_subj_10_dim*spdiags(mammen_120_subj);
-          idea_f_mammen_bootstrap_60_subj_10_dim = idea_f_residuals_60_subj_10_dim*spdiags(mammen_60_subj);
-          idea_f_mammen_bootstrap_30_subj_10_dim = idea_f_residuals_30_subj_10_dim*spdiags(mammen_30_subj);
+          idea_f_signflips_bootstrap_120_subj_10_dim = idea_f_residuals_120_subj_10_dim*spdiags(signflips_120_subj, 0, nSubj, nSubj);
+          idea_f_signflips_bootstrap_60_subj_10_dim = idea_f_residuals_60_subj_10_dim*spdiags(signflips_60_subj, 0, nSubj/2, nSubj/2);
+          idea_f_signflips_bootstrap_30_subj_10_dim = idea_f_residuals_30_subj_10_dim*spdiags(signflips_30_subj, 0, nSubj/4, nSubj/4);
+          idea_f_gauss_bootstrap_120_subj_10_dim = idea_f_residuals_120_subj_10_dim*spdiags(gauss_120_subj, 0, nSubj, nSubj);
+          idea_f_gauss_bootstrap_60_subj_10_dim = idea_f_residuals_60_subj_10_dim*spdiags(gauss_60_subj, 0, nSubj/2, nSubj/2);
+          idea_f_gauss_bootstrap_30_subj_10_dim = idea_f_residuals_30_subj_10_dim*spdiags(gauss_30_subj, 0, nSubj/4, nSubj/4);
+          idea_f_mammen_bootstrap_120_subj_10_dim = idea_f_residuals_120_subj_10_dim*spdiags(mammen_120_subj, 0, nSubj, nSubj);
+          idea_f_mammen_bootstrap_60_subj_10_dim = idea_f_residuals_60_subj_10_dim*spdiags(mammen_60_subj, 0, nSubj/2, nSubj/2);
+          idea_f_mammen_bootstrap_30_subj_10_dim = idea_f_residuals_30_subj_10_dim*spdiags(mammen_30_subj, 0, nSubj/4, nSubj/4);
           
           idea_f_signflips_resid_field_120_subj_10_dim = sum(idea_f_signflips_bootstrap_120_subj_10_dim, 2)/sqrt(nSubj);
           idea_f_signflips_resid_field_60_subj_10_dim = sum(idea_f_signflips_bootstrap_60_subj_10_dim, 2)/sqrt(nSubj/2);

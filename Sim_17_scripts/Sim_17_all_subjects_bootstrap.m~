@@ -1,4 +1,4 @@
-nRlz=1;
+nRlz=300;
 nSubj = 120;
 mag = [0.2, 0.7, 1, 2, 5];
 smo = [1, 3, 5, 7];
@@ -23,7 +23,7 @@ end
 
 for j = 1:5
     for k = 1:4
-        SvNm = ['Bootstrap_Sim_17_' num2str(erase(num2str(mag(j)),'.')) '_effect_size_' num2str(smo(k)) '_smoothing.mat'];
+        SvNm = ['Bootstrap_Sim_17_' num2str(erase(num2str(mag(j)),'.')) '_effect_size_' num2str(smo(k)) '_smoothing'];
         dest = fullfile(home_dir, 'Sim_17_results', [num2str(erase(num2str(mag(j)),'.')) '_effect_size'], [num2str(smo(k)) '_smoothing/']);
         movefile(SvNm,dest);
     end

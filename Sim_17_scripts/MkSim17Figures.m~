@@ -1,0 +1,89 @@
+home_dir = '/storage/maullz/Contour_Inference_2019/';
+nSubj = [30, 60, 120];
+dim = [10, 60, 124];
+dim_title = [string('10^2 boundary length'), string('60^2 boundary length'), string('124^2 boundary length')];
+distribution_type_boot = [string('abs'), string('max'), string('min')];
+distribution_type_monte_carlo = [string('abs_max'), string('max'), string('min')];
+distribution_type_y_label = [string('absolute maximum'), string('maximum'), string('minimum')];
+distribution_type_SvNm = [string('abs_max_dist'), string('max_dist'), string('min_dist')];
+quantile = [95, 97.5, 2.5];
+boot_estimator = [string('idea_one'), string('idea_f')];
+boot_estimator_title = [string('Cohen D variance estimator'), string('SNR resid variance estimator')];
+boot_estimator_SvNm = [string('cohen_var'), string('snr_var')];
+boot_type = [string(''),string('tboot_')];
+boot_type_title = [string('mult. bootstrap'), string('t-bootstrap')];
+boot_type_SvNm  = [string('mult_bootstrap'), string('t_bootstrap')];
+boot_variable = [string('signflips'), string('gauss'), string('mammen')];
+
+mag = [0.2, 0.7, 1, 2, 5];
+smo = [1, 3, 5, 7];
+
+color_vec = 'krbg';
+
+
+for j = 1:length(mag)
+    for k = 1:length(smo)
+        Base = fullfile(home_dir, 'Sim_17_results', [num2str(erase(num2str(mag(j)),'.')) '_effect_size'], [num2str(smo(k)) '_smoothing/']);
+        cd(Base);
+        figures_dir = fullfile(Base, 'Figures');
+        
+        if ~isdir(figures_dir)
+            mkdir(figures_dir)
+        end
+        
+        monte_carlo_mat = load(fullfile(Base, ['Sim_17_' num2str(erase(num2str(mag(j)),'.')) '_effect_size_' num2str(smo(k)) '_smoothing.mat']));
+        bootstrap_mat   = load(fullfile(Base, ['Bootstrap_Sim_17_' num2str(erase(num2str(mag(j)),'.')) '_effect_size_' num2str(smo(k)) '_smoothing.mat']));
+        
+        for v = 1:length(dim)
+            for x = 1:length(distribution_type_boot)
+                for y = 1:length(boot_estimator)
+                    for z = 1:length(boot_type)
+                        figure, clf
+                        hold on 
+                        
+                        for t = 1:length(color_vec)
+                            if t == 1
+                                working_mat = {sprintf('monte_carlo_mat.monte_carlo_%s_resid_store_%s_subj_%s_dim', distribution_type_monte_carlo(x), num2str(nSubj(1)), num2str(dim(v))), ...
+                                               sprintf('monte_carlo_mat.monte_carlo_%s_resid_store_%s_subj_%s_dim', distribution_type_monte_carlo(x), num2str(nSubj(2)), num2str(dim(v))), ...
+                                               sprintf('monte_carlo_mat.monte_carlo_%s_resid_store_%s_subj_%s_dim', distribution_type_monte_carlo(x), num2str(nSubj(3)), num2str(dim(v))) ...
+                                               };
+                            else
+                                working_mat = {sprintf('bootstrap_mat.%s_%s%s_%s_supG_resid_field_%s_subj_%s_dim', boot_estimator(y), boot_variable(t-1), boot_type(z), distribution_type_boot(x), num2str(nSubj(1)), num2str(dim(v))), ...
+                                               sprintf('bootstrap_mat.%s_%s%s_%s_supG_resid_field_%s_subj_%s_dim', boot_estimator(y), boot_variable(t-1), boot_type(z), distribution_type_boot(x), num2str(nSubj(2)), num2str(dim(v))), ...
+                                               sprintf('bootstrap_mat.%s_%s%s_%s_supG_resid_field_%s_subj_%s_dim', boot_estimator(y), boot_variable(t-1), boot_type(z), distribution_type_boot(x), num2str(nSubj(3)), num2str(dim(v))) ...
+                                               };
+                            end   
+                        
+                        quantiles = [prctile(eval(char(working_mat(1))), quantile(x)), prctile(eval(char(working_mat(2))), quantile(x)), prctile(eval(char(working_mat(3))), quantile(x))];   
+                        plot(nSubj, quantiles, [color_vec(t) '-' 'x'], 'linewidth', 1.5)
+                        end
+                        % set the range for the axis
+                        xlim([nSubj(1)-5, nSubj(end)+5])
+                        % specify tiks
+                        xticks(nSubj)
+                        % put label onto the axis
+                        xlabel('Sample Size [N]');
+                        ylabel(sprintf('%s%% quantile value of %s distribution', num2str(quantile(x)), distribution_type_y_label(x)));
+                        
+                        titlename = sprintf('Quantile results; %s; %s; %s Effect size; %s; %s smoothness', boot_estimator_title(y), boot_type_title(z), num2str(mag(j)), dim_title(v), num2str(smo(k)));
+                        title(titlename);
+                        
+                        set(gca, 'fontsize', 14);
+                        axis square;
+                        hold off
+                        
+                        lgd = legend('Monte Carlo quantile value', ...
+                                     'Rademacher quantile value', ...
+                                     'Gaussian quantile value', ...
+                                     'Mammen quantile value');
+                                 
+                        fh = gcf;
+                        set(fh,'color','w');
+                        SvNm = sprintf('%s_%s_%s_%s_bdry_length', boot_type_SvNm(z), boot_estimator_SvNm(z), distribution_type_SvNm(x), num2str(dim(v)));
+                end
+            end
+        end    
+        
+        
+    end
+end
