@@ -24,9 +24,9 @@ end
 switch(signal_type)
 	case 'ramp'
 		if size(param,2) == 1
-			Y = repmat(linspace(0, param), dim(2), 1);
+			Y = repmat(linspace(0, param), dim(1), 1);
 		elseif size(param,2) == 2
-			Y = repmat(linspace(param(1), param(2)), dim(2), 1);
+			Y = repmat(linspace(param(1), param(2)), dim(1), 1);
 		else
 			error('param must be a scalar X or vector [X,Y]')
 		end
