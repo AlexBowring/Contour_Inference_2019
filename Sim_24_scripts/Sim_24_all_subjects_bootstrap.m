@@ -1,0 +1,31 @@
+nRlz=1;
+nSubj = 240;
+mag = [0.2, 0.7, 1, 2, 5];
+smo = [1, 3, 5, 7];
+home_dir = '/storage/maullz/Contour_Inference_2019/';
+
+cd(home_dir)
+addpath('/storage/essicd/spm8/')
+addpath(genpath('/storage/maullz/Contour_Inference_2019/'))
+
+rng('shuffle')
+tID=str2num(getenv('SGE_TASK_ID'))
+
+
+
+for j = 1:5
+    for k = 1:4
+        SvNm = ['Bootstrap_Sim_24_' num2str(erase(num2str(mag(j)),'.')) '_effect_size_' num2str(smo(k)) '_smoothing'];
+        Sim_24_bootstrap(nSubj, SvNm, nRlz, mag(j), smo(k));
+    end
+end
+
+
+for j = 1:5
+    for k = 1:4
+        SvNm = ['Bootstrap_Sim_24_' num2str(erase(num2str(mag(j)),'.')) '_effect_size_' num2str(smo(k)) '_smoothing.mat'];
+        dest = fullfile(home_dir, 'Sim_24_results', [num2str(erase(num2str(mag(j)),'.')) '_effect_size'], [num2str(smo(k)) '_smoothing/']);
+        movefile(SvNm,dest);
+    end
+end
+
