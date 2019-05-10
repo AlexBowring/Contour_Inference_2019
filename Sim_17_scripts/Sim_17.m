@@ -163,9 +163,9 @@ for t=1:nRlz
       
       resid_field_120_subj_124_dim = sqrt(nSubj)*(observed_cohen_d_120_subj_124_dim - thr)./observed_cohen_d_std_120_subj_124_dim;
       abs_resid_field_120_subj_124_dim = abs(resid_field_120_subj_124_dim);
-      resid_field_60_subj_124_dim = sqrt(nSubj)*(observed_cohen_d_60_subj_124_dim - thr)./observed_cohen_d_std_60_subj_124_dim;
+      resid_field_60_subj_124_dim = sqrt(nSubj/2)*(observed_cohen_d_60_subj_124_dim - thr)./observed_cohen_d_std_60_subj_124_dim;
       abs_resid_field_60_subj_124_dim = abs(resid_field_60_subj_124_dim);   
-      resid_field_30_subj_124_dim = sqrt(nSubj)*(observed_cohen_d_30_subj_124_dim - thr)./observed_cohen_d_std_30_subj_124_dim;
+      resid_field_30_subj_124_dim = sqrt(nSubj/4)*(observed_cohen_d_30_subj_124_dim - thr)./observed_cohen_d_std_30_subj_124_dim;
       abs_resid_field_30_subj_124_dim = abs(resid_field_30_subj_124_dim);  
    
       
@@ -181,9 +181,9 @@ for t=1:nRlz
       
       resid_field_snr_std_120_subj_124_dim = sqrt(nSubj)*(observed_cohen_d_120_subj_124_dim - thr)./snr_resid_std_120_subj_124_dim;
       abs_resid_field_snr_std_120_subj_124_dim = abs(resid_field_snr_std_120_subj_124_dim);
-      resid_field_snr_std_60_subj_124_dim = sqrt(nSubj)*(observed_cohen_d_60_subj_124_dim - thr)./snr_resid_std_60_subj_124_dim;
+      resid_field_snr_std_60_subj_124_dim = sqrt(nSubj/2)*(observed_cohen_d_60_subj_124_dim - thr)./snr_resid_std_60_subj_124_dim;
       abs_resid_field_snr_std_60_subj_124_dim = abs(resid_field_snr_std_60_subj_124_dim);
-      resid_field_snr_std_30_subj_124_dim = sqrt(nSubj)*(observed_cohen_d_30_subj_124_dim - thr)./snr_resid_std_30_subj_124_dim;
+      resid_field_snr_std_30_subj_124_dim = sqrt(nSubj/4)*(observed_cohen_d_30_subj_124_dim - thr)./snr_resid_std_30_subj_124_dim;
       abs_resid_field_snr_std_30_subj_124_dim = abs(resid_field_snr_std_30_subj_124_dim);
       
       monte_carlo_max_resid_store_snr_std_120_subj_124_dim(t,1)     = max(resid_field_snr_std_120_subj_124_dim(:));
@@ -240,9 +240,9 @@ for t=1:nRlz
       
       resid_field_120_subj_60_dim = sqrt(nSubj)*(observed_cohen_d_120_subj_60_dim - thr)./observed_cohen_d_std_120_subj_60_dim;
       abs_resid_field_120_subj_60_dim = abs(resid_field_120_subj_60_dim);
-      resid_field_60_subj_60_dim = sqrt(nSubj)*(observed_cohen_d_60_subj_60_dim - thr)./observed_cohen_d_std_60_subj_60_dim;
+      resid_field_60_subj_60_dim = sqrt(nSubj/2)*(observed_cohen_d_60_subj_60_dim - thr)./observed_cohen_d_std_60_subj_60_dim;
       abs_resid_field_60_subj_60_dim = abs(resid_field_60_subj_60_dim);   
-      resid_field_30_subj_60_dim = sqrt(nSubj)*(observed_cohen_d_30_subj_60_dim - thr)./observed_cohen_d_std_30_subj_60_dim;
+      resid_field_30_subj_60_dim = sqrt(nSubj/4)*(observed_cohen_d_30_subj_60_dim - thr)./observed_cohen_d_std_30_subj_60_dim;
       abs_resid_field_30_subj_60_dim = abs(resid_field_30_subj_60_dim);  
    
       
@@ -258,9 +258,9 @@ for t=1:nRlz
       
       resid_field_snr_std_120_subj_60_dim = sqrt(nSubj)*(observed_cohen_d_120_subj_60_dim - thr)./snr_resid_std_120_subj_60_dim;
       abs_resid_field_snr_std_120_subj_60_dim = abs(resid_field_snr_std_120_subj_60_dim);
-      resid_field_snr_std_60_subj_60_dim = sqrt(nSubj)*(observed_cohen_d_60_subj_60_dim - thr)./snr_resid_std_60_subj_60_dim;
+      resid_field_snr_std_60_subj_60_dim = sqrt(nSubj/2)*(observed_cohen_d_60_subj_60_dim - thr)./snr_resid_std_60_subj_60_dim;
       abs_resid_field_snr_std_60_subj_60_dim = abs(resid_field_snr_std_60_subj_60_dim);
-      resid_field_snr_std_30_subj_60_dim = sqrt(nSubj)*(observed_cohen_d_30_subj_60_dim - thr)./snr_resid_std_30_subj_60_dim;
+      resid_field_snr_std_30_subj_60_dim = sqrt(nSubj/4)*(observed_cohen_d_30_subj_60_dim - thr)./snr_resid_std_30_subj_60_dim;
       abs_resid_field_snr_std_30_subj_60_dim = abs(resid_field_snr_std_30_subj_60_dim);
       
       monte_carlo_max_resid_store_snr_std_120_subj_60_dim(t,1)     = max(resid_field_snr_std_120_subj_60_dim(:));
@@ -317,9 +317,9 @@ for t=1:nRlz
       
       resid_field_120_subj_10_dim = sqrt(nSubj)*(observed_cohen_d_120_subj_10_dim - thr)./observed_cohen_d_std_120_subj_10_dim;
       abs_resid_field_120_subj_10_dim = abs(resid_field_120_subj_10_dim);
-      resid_field_60_subj_10_dim = sqrt(nSubj)*(observed_cohen_d_60_subj_10_dim - thr)./observed_cohen_d_std_60_subj_10_dim;
+      resid_field_60_subj_10_dim = sqrt(nSubj/2)*(observed_cohen_d_60_subj_10_dim - thr)./observed_cohen_d_std_60_subj_10_dim;
       abs_resid_field_60_subj_10_dim = abs(resid_field_60_subj_10_dim);   
-      resid_field_30_subj_10_dim = sqrt(nSubj)*(observed_cohen_d_30_subj_10_dim - thr)./observed_cohen_d_std_30_subj_10_dim;
+      resid_field_30_subj_10_dim = sqrt(nSubj/4)*(observed_cohen_d_30_subj_10_dim - thr)./observed_cohen_d_std_30_subj_10_dim;
       abs_resid_field_30_subj_10_dim = abs(resid_field_30_subj_10_dim);  
    
       
@@ -335,9 +335,9 @@ for t=1:nRlz
       
       resid_field_snr_std_120_subj_10_dim = sqrt(nSubj)*(observed_cohen_d_120_subj_10_dim - thr)./snr_resid_std_120_subj_10_dim;
       abs_resid_field_snr_std_120_subj_10_dim = abs(resid_field_snr_std_120_subj_10_dim);
-      resid_field_snr_std_60_subj_10_dim = sqrt(nSubj)*(observed_cohen_d_60_subj_10_dim - thr)./snr_resid_std_60_subj_10_dim;
+      resid_field_snr_std_60_subj_10_dim = sqrt(nSubj/2)*(observed_cohen_d_60_subj_10_dim - thr)./snr_resid_std_60_subj_10_dim;
       abs_resid_field_snr_std_60_subj_10_dim = abs(resid_field_snr_std_60_subj_10_dim);
-      resid_field_snr_std_30_subj_10_dim = sqrt(nSubj)*(observed_cohen_d_30_subj_10_dim - thr)./snr_resid_std_30_subj_10_dim;
+      resid_field_snr_std_30_subj_10_dim = sqrt(nSubj/4)*(observed_cohen_d_30_subj_10_dim - thr)./snr_resid_std_30_subj_10_dim;
       abs_resid_field_snr_std_30_subj_10_dim = abs(resid_field_snr_std_30_subj_10_dim);
       
       monte_carlo_max_resid_store_snr_std_120_subj_10_dim(t,1)     = max(resid_field_snr_std_120_subj_10_dim(:));
